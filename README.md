@@ -1,4 +1,6 @@
 # mcburn-js
 A javascript example of calling the mcburn cNFT burner program.
 
-attn, not production ready
+ATTN pending deployed program id.
+
+This repo is derived from working code however this repo itself has not been tested.
