@@ -238,14 +238,15 @@ async function mcburnjs(_asset_,_helius_,_program_,_alt_) {
     let messageV0 = null;
     if (proof.length > 23) {
         const slot = await connection.getSlot();
-        const [createALTIx, proofALTAddress] =
-        solanaWeb3.AddressLookupTableProgram.createLookupTable({
+        const [createALTIx, proofALTAddress] = solanaWeb3.AddressLookupTableProgram.createLookupTable({
             authority: provider.publicKey,
             payer: provider.publicKey,
             recentSlot: slot,
         });
+        
+        console.log("SAVE THIS ALT ADDRESS TO DEACTIVATE AND CLOSE LATER TO RECOUP FUNDS!");
         console.log("Proof Lookup Table Address", proofALTAddress.toBase58());
-
+        
         let proofPubkeys = [];
         for (let i = 0; i < proof.length - 23; i++) {
             proofPubkeys.push(proof[i].pubkey);
@@ -301,7 +302,8 @@ async function mcburnjs(_asset_,_helius_,_program_,_alt_) {
             payerKey: provider.publicKey,
             recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
             instructions: [computePriceIx, burnCNFTIx],
-        }).compileToV0Message([proofALTAccount]);
+        }).compileToV0Message([proofALTAccount]);      
+      
     } 
     else {
       messageV0 = new solanaWeb3.TransactionMessage({
