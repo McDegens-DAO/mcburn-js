@@ -8,6 +8,8 @@ This repo is derived from working code however this repo itself has not been tes
 
 You can find the OSS Rust repo here: https://github.com/honeygrahams2/mcburn
 
+Deployed Program Id: GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i
+
 When running mcburnjs()
 
 If there are > 23 proofs required, a tx to create a helper ALT is required before the burn. Since ALTs cost SOL, you should save the helper ALT's address so that you can deactivate it and then close it to recover funds. 
