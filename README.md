@@ -26,6 +26,6 @@ Timing required may be by slots passed or blockhash expiration.
 
 Currently we're just waiting 5 minutes after the burn to deactivate, and then another 5 min before closing.
 
-We will run more test to narrow this timing down and dumify the flow.
+We will run more tests to narrow this timing down and dumify the flow.
 
 Burner apps may want to consider handling the Helper ALT creation and reclaiming of funds on their backend to simplify the front end flow for their users.
