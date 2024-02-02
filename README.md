@@ -11,7 +11,7 @@ When running mcburnjs()
 
 If there are > 23 proofs required, a tx to create a helper ALT is required before the burn. Since ALTs cost SOL, you should save the helper ALT's address so that you can deactivate it and then close it to recover funds. 
 
-In the console logs you will see this output: 
+If a helper ALT is created, in the console logs you will see this output: 
 
 "SAVE THIS ALT ADDRESS TO DEACTIVATE AND CLOSE LATER TO RECOUP FUNDS!"
 
