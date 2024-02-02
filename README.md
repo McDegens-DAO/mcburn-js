@@ -1,5 +1,5 @@
 # mcburn-js
-A javascript example of calling the mcburn cNFT burner program.
+A javascript example calling the mcburn cNFT burner program.
 This repo is derived from working code however this repo itself has not been tested.
 
 ATTN - this is not ready yet!
