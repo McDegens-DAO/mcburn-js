@@ -19,7 +19,7 @@ followed by the Helper ALT's address you need to save.
 
 Please note there are some timing events that have to be considered.
 
-You can not deactivate an ALT imediately after burning. And you can not close an ALT imediately after deactivating it. 
+You can not deactivate an ALT imediately after burning and you can not close an ALT imediately after deactivating it. 
 
 Timing required may be by slots passed or blockhash expiration.
 
