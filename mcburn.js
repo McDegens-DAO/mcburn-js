@@ -14,13 +14,15 @@ let connection = null;
 ////////////////////////////////////////////////////////////////////////////////
 // settings
 const burner_program = "FRRYhLWhGZYb63HEwuVTu5VY7EY3Gwr9UXTc84ghwCiu";
-const static_alt = "6NVtn6zJDzSpgPxPRtd6UAoWkDxmuqv2HgCLLJEeQLY";
 const cluster = "https://rpc.helius.xyz/?api-key=XXXXXXXXXXXXXXXXXXXXXXXXXX";
 ////////////////////////////////////////////////////////////////////////////////
 
-
 // wallet connection logic is necessary to define and connect "provider"
 
+////////////////////////////////////////////////////////////////////////////////
+// default static alt - does not change, even if deploying your own contract
+const static_alt = "6NVtn6zJDzSpgPxPRtd6UAoWkDxmuqv2HgCLLJEeQLY";
+////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
 // functions
@@ -49,7 +51,6 @@ async function deactivateALT(_alt_) {
     console.log("Error Logs: ", error);
   }
 }
-
 async function closeALT(_alt_) {
   console.log("closing alt "+_alt_);
   let alt_address = new solanaWeb3.PublicKey(_alt_);
@@ -79,7 +80,6 @@ async function closeALT(_alt_) {
     return;
   }  
 }
-
 async function mcburnjs(_asset_,_helius_,_program_,_alt_) { 
   
     let connection = new solanaWeb3.Connection(_helius_, "confirmed");
