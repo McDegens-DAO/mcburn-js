@@ -1,3 +1,5 @@
+////////////////////////////////////////////////////////////////////////////////
+// imports
 import axios from "axios";
 import * as mplBubblegum from "@metaplex-foundation/mpl-bubblegum";
 import * as solanaWeb3 from "@solana/web3.js";
@@ -7,10 +9,76 @@ import * as buffer from "buffer";
 let Buffer = buffer.Buffer;
 let provider = null;
 let connection = null;
+////////////////////////////////////////////////////////////////////////////////
 
-// wallet connection logic is necessary here to define "provider"128711
+////////////////////////////////////////////////////////////////////////////////
+// settings
+const burner_program = "FRRYhLWhGZYb63HEwuVTu5VY7EY3Gwr9UXTc84ghwCiu";
+const static_alt = "6NVtn6zJDzSpgPxPRtd6UAoWkDxmuqv2HgCLLJEeQLY";
+const cluster = "https://rpc.helius.xyz/?api-key=XXXXXXXXXXXXXXXXXXXXXXXXXX";
+////////////////////////////////////////////////////////////////////////////////
 
-async function mcburnjs(_asset_,_program_,_alt_,_helius_) { 
+
+// wallet connection logic is necessary to define and connect "provider"
+
+
+////////////////////////////////////////////////////////////////////////////////
+// functions
+async function deactivateALT(_alt_) {
+  console.log("deactivating alt "+_alt_);
+  let alt_address = new solanaWeb3.PublicKey(_alt_);
+  let deactiveALTIx = solanaWeb3.AddressLookupTableProgram.deactivateLookupTable({
+    authority: provider.publicKey,
+    lookupTable: alt_address,
+  });
+  let tx = new solanaWeb3.Transaction();
+  tx.add(deactiveALTIx);
+  tx.recentBlockhash = (await connection.getRecentBlockhash('confirmed')).blockhash;
+  tx.feePayer = provider.publicKey;
+  try {
+    let signedTransaction = await provider.signTransaction(tx);
+    const serializedTransaction = signedTransaction.serialize();
+    const signature = await connection.sendRawTransaction(serializedTransaction,
+    { skipPreflight: false, preflightCommitment: 'confirmed' },);        
+    console.log(`https://solscan.io/tx/${signature}?cluster=mainnet`);
+  } 
+  catch(error) {
+    console.log("Error: ", error);
+    error = JSON.stringify(error);
+    error = JSON.parse(error);
+    console.log("Error Logs: ", error);
+  }
+}
+async function closeALT(_alt_) {
+  console.log("closing alt "+_alt_);
+  let alt_address = new solanaWeb3.PublicKey(_alt_);
+  let closeALTIx = solanaWeb3.AddressLookupTableProgram.closeLookupTable({
+    authority: provider.publicKey,
+    lookupTable: alt_address,
+    recipient: provider.publicKey,
+  });
+  let tx = new solanaWeb3.Transaction();
+  tx.add(closeALTIx);
+  tx.recentBlockhash = (await connection.getRecentBlockhash('confirmed')).blockhash;
+  tx.feePayer = provider.publicKey;
+  try {
+    let signedTransaction = await provider.signTransaction(tx);
+    const serializedTransaction = signedTransaction.serialize();
+    const signature = await connection.sendRawTransaction(
+        serializedTransaction,
+        { skipPreflight: false, preflightCommitment: 'confirmed' },
+    );        
+    console.log(`https://solscan.io/tx/${signature}?cluster=mainnet`);    
+  }
+  catch(error) {
+    console.log("Error: ", error);
+    error = JSON.stringify(error);
+    error = JSON.parse(error);  
+    console.log("Error Logs: ", error);
+    return;
+  }  
+}
+async function mcburnjs(_asset_,_helius_,_program_,_alt_) { 
   
     let connection = new solanaWeb3.Connection(_helius_, "confirmed");
 
@@ -258,7 +326,20 @@ async function mcburnjs(_asset_,_program_,_alt_,_helius_) {
     }
   
 }
-// usage - asset id, program id, static alt address, helius endpoint
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+// usage
 if(provider != null){
-  mcburnjs("5CtTN62isci9KxLeAPHkFb2pxzP6NDkVLMo9bseu7WpJ","FRRYhLWhGZYb63HEwuVTu5VY7EY3Gwr9UXTc84ghwCiu","6NVtn6zJDzSpgPxPRtd6UAoWkDxmuqv2HgCLLJEeQLY","https://rpc.helius.xyz/?api-key=XXXXXXXXXXXXXXXXXXXXXXXXXX");
+
+// usage - asset id, program id, static alt address, helius endpoint
+mcburnjs("5CtTN62isci9KxLeAPHkFb2pxzP6NDkVLMo9bseu7WpJ",cluster,burner_program,static_alt);
+
+// if the extra alt was created then you can deactivate it after (n)?
+//   deactivateALT("XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+
+// after deactivation you can colose the alt to recover funds after (n)?
+//   closeALT("XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+
 }
+////////////////////////////////////////////////////////////////////////////////
