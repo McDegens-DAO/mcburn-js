@@ -16,7 +16,7 @@ let connection = null;
 const rpc = "https://rpc.helius.xyz/?api-key=XXXXXXXXXXXXXXXXXXXXXXXXXX";
 const priority = 20;
 const cluster = "mainnet";
-const burner = "FRRYhLWhGZYb63HEwuVTu5VY7EY3Gwr9UXTc84ghwCiu";
+const burner = "GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i";
 ////////////////////////////////////////////////////////////////////////////////
 
 // wallet connection logic is necessary to define and connect "provider"
@@ -338,7 +338,8 @@ async function mcburnjs(_asset_,_priority_,_helius_,_program_,_alt_,_cluster_) {
 // usage
 if(provider != null){
 
-// usage - asset id, priority fee, helius endpoint, program id, static alt, cluster keyword
+// usage
+// asset id, priority fee, helius endpoint, program id, static alt, cluster keyword
 mcburnjs("5CtTN62isci9KxLeAPHkFb2pxzP6NDkVLMo9bseu7WpJ",priority,rpc,burner,static_alt,cluster);
 
 // if the extra alt was created then you can deactivate it after (n)?
