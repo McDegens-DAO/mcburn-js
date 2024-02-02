@@ -15,6 +15,7 @@ let connection = null;
 // settings
 const burner_program = "FRRYhLWhGZYb63HEwuVTu5VY7EY3Gwr9UXTc84ghwCiu";
 const cluster = "https://rpc.helius.xyz/?api-key=XXXXXXXXXXXXXXXXXXXXXXXXXX";
+const priority = 20;
 ////////////////////////////////////////////////////////////////////////////////
 
 // wallet connection logic is necessary to define and connect "provider"
@@ -80,7 +81,7 @@ async function closeALT(_alt_) {
     return;
   }  
 }
-async function mcburnjs(_asset_,_helius_,_program_,_alt_) { 
+async function mcburnjs(_asset_,_priority_,_helius_,_program_,_alt_) { 
   
     let connection = new solanaWeb3.Connection(_helius_, "confirmed");
 
@@ -225,7 +226,7 @@ async function mcburnjs(_asset_,_helius_,_program_,_alt_) {
     console.log("Burn cNFT Ix: ", burnCNFTIx);
     
     const computePriceIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({
-        microLamports: 500,
+        microLamports:_priority_,
     });
     
     let mainALTAddress = new solanaWeb3.PublicKey(_alt_);
@@ -245,7 +246,7 @@ async function mcburnjs(_asset_,_helius_,_program_,_alt_) {
         });
         
         console.log("SAVE THIS ALT ADDRESS TO DEACTIVATE AND CLOSE LATER TO RECOUP FUNDS!");
-        console.log("Proof Lookup Table Address", proofALTAddress.toBase58());
+        console.log("Helper ALT", proofALTAddress.toBase58());
         
         let proofPubkeys = [];
         for (let i = 0; i < proof.length - 23; i++) {
@@ -337,7 +338,7 @@ async function mcburnjs(_asset_,_helius_,_program_,_alt_) {
 if(provider != null){
 
 // usage - asset id, program id, static alt address, helius endpoint
-mcburnjs("5CtTN62isci9KxLeAPHkFb2pxzP6NDkVLMo9bseu7WpJ",cluster,burner_program,static_alt);
+mcburnjs("5CtTN62isci9KxLeAPHkFb2pxzP6NDkVLMo9bseu7WpJ",priority,cluster,burner_program,static_alt);
 
 // if the extra alt was created then you can deactivate it after (n)?
 //   deactivateALT("XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
