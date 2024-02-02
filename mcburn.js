@@ -338,7 +338,7 @@ async function mcburnjs(_asset_,_priority_,_helius_,_program_,_alt_,_cluster_) {
 // usage
 if(provider != null){
 
-// usage - asset id, program id, static alt address, helius endpoint
+// usage - asset id, priority fee, helius endpoint, program id, static alt, cluster keyword
 mcburnjs("5CtTN62isci9KxLeAPHkFb2pxzP6NDkVLMo9bseu7WpJ",priority,rpc,burner,static_alt,cluster);
 
 // if the extra alt was created then you can deactivate it after (n)?
