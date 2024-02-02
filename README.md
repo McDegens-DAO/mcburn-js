@@ -22,7 +22,7 @@ Please note there are some timing events that have to be considered.
 
 You can not deactivate an ALT imediately after burning and you can not close an ALT imediately after deactivating it. 
 
-Timing required may be by slots passed or blockhash expiration.
+Timing required may be by slots passed or blockhash expiration, we don't know yet.
 
 Currently we're just waiting 5 minutes after the burn to deactivate, and then another 5 min before closing.
 
