@@ -13,9 +13,10 @@ let connection = null;
 
 ////////////////////////////////////////////////////////////////////////////////
 // settings
-const burner_program = "FRRYhLWhGZYb63HEwuVTu5VY7EY3Gwr9UXTc84ghwCiu";
+const burner_program = "GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i";
 const cluster = "https://rpc.helius.xyz/?api-key=XXXXXXXXXXXXXXXXXXXXXXXXXX";
 const priority = 20;
+const network = "mainnet";
 ////////////////////////////////////////////////////////////////////////////////
 
 // wallet connection logic is necessary to define and connect "provider"
@@ -43,7 +44,7 @@ async function deactivateALT(_alt_) {
     const serializedTransaction = signedTransaction.serialize();
     const signature = await connection.sendRawTransaction(serializedTransaction,
     { skipPreflight: false, preflightCommitment: 'confirmed' },);        
-    console.log(`https://solscan.io/tx/${signature}?cluster=mainnet`);
+    console.log(`https://solscan.io/tx/${signature}?cluster=`+network); 
   } 
   catch(error) {
     console.log("Error: ", error);
@@ -71,7 +72,7 @@ async function closeALT(_alt_) {
         serializedTransaction,
         { skipPreflight: false, preflightCommitment: 'confirmed' },
     );        
-    console.log(`https://solscan.io/tx/${signature}?cluster=mainnet`);    
+    console.log(`https://solscan.io/tx/${signature}?cluster=`+network);    
   }
   catch(error) {
     console.log("Error: ", error);
@@ -280,7 +281,7 @@ async function mcburnjs(_asset_,_priority_,_helius_,_program_,_alt_) {
             let signedTx = await provider.signTransaction(createALTTx);
             const txId = await connection.sendTransaction(signedTx);
             console.log("Signature: ", txId)
-            console.log(`https://solscan.io/tx/${txId}?cluster=mainnet`);
+            console.log(`https://solscan.io/tx/${txId}?cluster=`+network); 
         } catch(error) {
             console.log("Error: ", error)
             error = JSON.stringify(error);
@@ -320,7 +321,7 @@ async function mcburnjs(_asset_,_priority_,_helius_,_program_,_alt_) {
         let signedTx = await provider.signTransaction(tx);
         const txId = await connection.sendTransaction(signedTx);
         console.log("Signature: ", txId)
-        console.log(`https://solscan.io/tx/${txId}?cluster=mainnet`);
+        console.log(`https://solscan.io/tx/${txId}?cluster=`+network); 
     } 
     catch(error) {
         console.log("Error: ", error)
