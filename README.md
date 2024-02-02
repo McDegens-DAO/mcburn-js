@@ -5,7 +5,7 @@ This repo is derived from working code however this repo itself has not been tes
 
 ATTN - this is not ready yet!
 
-You can find the OSS Rust repo here: 
+You can find the OSS Rust repo here: https://github.com/honeygrahams2/mcburn
 
 When running mcburnjs()
 
