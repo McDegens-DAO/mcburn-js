@@ -13,10 +13,10 @@ let connection = null;
 
 ////////////////////////////////////////////////////////////////////////////////
 // settings
-const burner_program = "GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i";
-const cluster = "https://rpc.helius.xyz/?api-key=XXXXXXXXXXXXXXXXXXXXXXXXXX";
+const rpc = "https://rpc.helius.xyz/?api-key=XXXXXXXXXXXXXXXXXXXXXXXXXX";
 const priority = 20;
-const network = "mainnet";
+const cluster = "mainnet";
+const burner = "FRRYhLWhGZYb63HEwuVTu5VY7EY3Gwr9UXTc84ghwCiu";
 ////////////////////////////////////////////////////////////////////////////////
 
 // wallet connection logic is necessary to define and connect "provider"
@@ -44,7 +44,7 @@ async function deactivateALT(_alt_) {
     const serializedTransaction = signedTransaction.serialize();
     const signature = await connection.sendRawTransaction(serializedTransaction,
     { skipPreflight: false, preflightCommitment: 'confirmed' },);        
-    console.log(`https://solscan.io/tx/${signature}?cluster=`+network); 
+    console.log(`https://solscan.io/tx/${signature}?cluster=`+cluster);
   } 
   catch(error) {
     console.log("Error: ", error);
@@ -72,7 +72,7 @@ async function closeALT(_alt_) {
         serializedTransaction,
         { skipPreflight: false, preflightCommitment: 'confirmed' },
     );        
-    console.log(`https://solscan.io/tx/${signature}?cluster=`+network);    
+    console.log(`https://solscan.io/tx/${signature}?cluster=`+cluster); 
   }
   catch(error) {
     console.log("Error: ", error);
@@ -82,10 +82,10 @@ async function closeALT(_alt_) {
     return;
   }  
 }
-async function mcburnjs(_asset_,_priority_,_helius_,_program_,_alt_) { 
-  
+async function mcburnjs(_asset_,_priority_,_helius_,_program_,_alt_,_cluster_) { 
+    
     let connection = new solanaWeb3.Connection(_helius_, "confirmed");
-
+    
     let assetId = _asset_;    
     console.log("assetId ", assetId);
     
@@ -281,7 +281,7 @@ async function mcburnjs(_asset_,_priority_,_helius_,_program_,_alt_) {
             let signedTx = await provider.signTransaction(createALTTx);
             const txId = await connection.sendTransaction(signedTx);
             console.log("Signature: ", txId)
-            console.log(`https://solscan.io/tx/${txId}?cluster=`+network); 
+            console.log(`https://solscan.io/tx/${txId}?cluster=`+_cluster_);
         } catch(error) {
             console.log("Error: ", error)
             error = JSON.stringify(error);
@@ -321,13 +321,13 @@ async function mcburnjs(_asset_,_priority_,_helius_,_program_,_alt_) {
         let signedTx = await provider.signTransaction(tx);
         const txId = await connection.sendTransaction(signedTx);
         console.log("Signature: ", txId)
-        console.log(`https://solscan.io/tx/${txId}?cluster=`+network); 
+        console.log(`https://solscan.io/tx/${txId}?cluster=`+_cluster_);
     } 
     catch(error) {
-        console.log("Error: ", error)
+        console.log("Error: ", error);
         error = JSON.stringify(error);
         error = JSON.parse(error);
-        console.log("Error Logs: ", error)
+        console.log("Error Logs: ", error);
         return;
     }
   
@@ -339,7 +339,7 @@ async function mcburnjs(_asset_,_priority_,_helius_,_program_,_alt_) {
 if(provider != null){
 
 // usage - asset id, program id, static alt address, helius endpoint
-mcburnjs("5CtTN62isci9KxLeAPHkFb2pxzP6NDkVLMo9bseu7WpJ",priority,cluster,burner_program,static_alt);
+mcburnjs("5CtTN62isci9KxLeAPHkFb2pxzP6NDkVLMo9bseu7WpJ",priority,rpc,burner,static_alt,cluster);
 
 // if the extra alt was created then you can deactivate it after (n)?
 //   deactivateALT("XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
