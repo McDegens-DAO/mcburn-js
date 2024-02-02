@@ -1,9 +1,10 @@
 # mcburn-js
+
 A javascript example calling the mcburn cNFT burner program.
 
-This repo is derived from working code however this repo itself has not been tested.
+ATTN!
 
-ATTN - this is not ready yet!
+This repo is derived from working code however this repo itself has not been tested.
 
 You can find the OSS Rust repo here: https://github.com/honeygrahams2/mcburn
 
