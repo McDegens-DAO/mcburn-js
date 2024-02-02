@@ -49,6 +49,7 @@ async function deactivateALT(_alt_) {
     console.log("Error Logs: ", error);
   }
 }
+
 async function closeALT(_alt_) {
   console.log("closing alt "+_alt_);
   let alt_address = new solanaWeb3.PublicKey(_alt_);
@@ -78,6 +79,7 @@ async function closeALT(_alt_) {
     return;
   }  
 }
+
 async function mcburnjs(_asset_,_helius_,_program_,_alt_) { 
   
     let connection = new solanaWeb3.Connection(_helius_, "confirmed");
