@@ -2,7 +2,7 @@
 
 A javascript example calling the mcburn cNFT burner program.
 
-ATTN!
+**ATTN!**
 
 This repo is derived from working code however this repo itself has not been tested.
 
