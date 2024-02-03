@@ -17,8 +17,7 @@ You can find the open source Rust repo here: [mcburn](https://github.com/honeygr
 
 **Address:** 6NVtn6zJDzSpgPxPRtd6UAoWkDxmuqv2HgCLLJEeQLY
 
-The mcburn Solana program uses a predefined ALT we call a the *Static ALT* where common program ids are stored to reduce the overall tx size of the burn.
-
+The mcburn Solana program uses a predefined ALT we call a the *Static ALT* where common program ids are stored to reduce the overall tx size of the burn. 
 There are 5 *Lookup Table Entries* in the *Static ALT* that are used by default in every tx:
 
 1. Burner Program Id
