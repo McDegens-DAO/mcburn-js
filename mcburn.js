@@ -10,16 +10,16 @@ let Buffer = buffer.Buffer;
 let provider = null;
 let connection = null;
 let keypair = null;
+const static_alt = "6NVtn6zJDzSpgPxPRtd6UAoWkDxmuqv2HgCLLJEeQLY";
 // let keypair = [94,236,110,12,30,200,108,"~"];
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
 // settings
-const rpc = "https://rpc.helius.xyz/?api-key=XXXXXXXXXXXXXXXXXXXXXXXXXX";
-const priority = 20;
-const cluster = "mainnet";
-const burner = "GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i";
-const static_alt = "6NVtn6zJDzSpgPxPRtd6UAoWkDxmuqv2HgCLLJEeQLY";
+const rpc = "https://rpc.helius.xyz/?api-key=XXXXXXXXXXXXXXXXXXXXXXX"; //helius
+const priority = 20; // lamports (priority fee)
+const cluster = "mainnet"; // mainnet or devnet
+const burner = "GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i"; // burner program
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -42,19 +42,14 @@ async function mcburnjs(_asset_,_priority_,_helius_,_program_,_alt_,_cluster_) {
     console.log("assetId ", assetId);
     
     let cNFTBurnerProgramId = new solanaWeb3.PublicKey(_program_);
-    let heliusUrl = _helius_;
     
-    const axiosInstance = axios.create({
-        baseURL: heliusUrl,
-    });
+    const axiosInstance = axios.create({baseURL:_helius_,});
     
-    const getAsset = await axiosInstance.post(heliusUrl, {
-        jsonrpc: "2.0",
-        method: "getAsset",
-        id: "rpd-op-123",
-        params: {
-            id: assetId
-        },
+    const getAsset = await axiosInstance.post(_helius_, {
+      jsonrpc: "2.0",
+      method: "getAsset",
+      id: "rpd-op-123",
+      params: {id: assetId},
     });
     console.log("getAsset ", getAsset);
     console.log("data_hash ", getAsset.data.result.compression.data_hash);
@@ -66,20 +61,20 @@ async function mcburnjs(_asset_,_priority_,_helius_,_program_,_alt_,_cluster_) {
         leafDelegate = new solanaWeb3.PublicKey(getAsset.data.result.ownership.delegate);
     }
     console.log("leafDelegate ", leafDelegate.toString());
-
+    
     console.log("getAsset.data.result.ownership.owner ", getAsset.data.result.ownership.owner);
-
+    
     if (getAsset.data.result.ownership.owner != provider.publicKey) {
         console.log("Asset Not Owned by Provider");
         return;
     }
-
+    
     if (getAsset.data.result.burnt == true) {
         console.log("Asset Already Burned");
         return;
     }
 
-    const getAssetProof = await axiosInstance.post(heliusUrl, {
+    const getAssetProof = await axiosInstance.post(_helius_, {
         jsonrpc: "2.0",
         method: "getAssetProof",
         id: "rpd-op-123",
@@ -351,10 +346,10 @@ async function closeALT(_alt_,_helius_,_cluster_) {
 // usage
 if(provider != null){
   // asset id, priority fee, helius endpoint, program id, static alt, cluster keyword
-  mcburnjs("5CtTN62isci9KxLeAPHkFb2pxzP6NDkVLMo9bseu7WpJ",priority,rpc,burner,static_alt,cluster);
-  // if the extra alt was created then you can deactivate it after (n)?
-  //   deactivateALT("XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-  // after deactivation you can colose the alt to recover funds after (n)?
-  //   closeALT("XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+  mcburnjs("XXXXXXX_CNFT_ASSET_ID_XXXXXXX",priority,rpc,burner,static_alt,cluster);
+  // helper alt, helius endpoint, cluster keyword
+  // deactivateALT("HELPER_ALT_ADDRESS", rpc, cluster);
+  // helper alt, helius endpoint, cluster keyword
+  // closeALT("HELPER_ALT_ADDRESS", rpc, cluster);
 }
 ////////////////////////////////////////////////////////////////////////////////
