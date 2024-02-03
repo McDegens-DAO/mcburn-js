@@ -12,6 +12,8 @@ It is meant to show basic usage examples and is currently in development.
 
 You can find the open source Rust repo here: [mcburn](https://github.com/honeygrahams2/mcburn)
 
+It is operational and successfully burns everything we send it.
+
 **Program Id:** GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i
 
 # Js Settings
