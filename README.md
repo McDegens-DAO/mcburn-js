@@ -4,7 +4,7 @@ A javascript example calling the mcburn cNFT burner program.
 
 # ATTN!
 
-This repo is derived from working code however this repo itself has not been tested.
+This repo is derived from working code however it does not work out of the box given the wallet "provider" is undefined.
 
 You can find the open source Rust repo here: [mcburn](https://github.com/honeygrahams2/mcburn)
 
