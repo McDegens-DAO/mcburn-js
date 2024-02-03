@@ -29,7 +29,7 @@ There are 5 *Lookup Table Entries* in the *Static ALT* that are used by default 
 # Helper ALT?
 (lookup table)
 
-In some cases multiple transactions are required to burn stubborn cNFTS.
+In some cases multiple transactions are required to burn a stubborn cNFT.
 
 For example if there are > 23 proofs passed in the ix, there will first be a tx to create a *Helper ALT* prior to the burn transaction.
 
