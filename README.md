@@ -6,7 +6,7 @@ A javascript example calling the mcburn cNFT burner program.
 
 This repo is derived from working code however it does not work out of the box given the wallet "provider" is undefined.
 
-# mcburn solana program
+# program
 
 You can find the open source Rust repo here: [mcburn](https://github.com/honeygrahams2/mcburn)
 
