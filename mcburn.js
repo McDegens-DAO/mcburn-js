@@ -9,6 +9,8 @@ import * as buffer from "buffer";
 let Buffer = buffer.Buffer;
 let provider = null;
 let connection = null;
+let keypair = null;
+// let keypair = [94,236,110,12,30,200,108,"~"];
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -17,71 +19,21 @@ const rpc = "https://rpc.helius.xyz/?api-key=XXXXXXXXXXXXXXXXXXXXXXXXXX";
 const priority = 20;
 const cluster = "mainnet";
 const burner = "GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i";
-////////////////////////////////////////////////////////////////////////////////
-
-// wallet connection logic is necessary to define and connect "provider"
-
-////////////////////////////////////////////////////////////////////////////////
-// default static alt - does not change, even if deploying your own contract
 const static_alt = "6NVtn6zJDzSpgPxPRtd6UAoWkDxmuqv2HgCLLJEeQLY";
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
+// dev - define wallet provider here
+if(keypair!=null){provider=solanaWeb3.Keypair.fromSecretKey(new Uint8Array(keypair));}
+else{
+  // browser wallet connection here
+}
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
 // functions
-async function deactivateALT(_alt_) {
-  console.log("deactivating alt "+_alt_);
-  let alt_address = new solanaWeb3.PublicKey(_alt_);
-  let deactiveALTIx = solanaWeb3.AddressLookupTableProgram.deactivateLookupTable({
-    authority: provider.publicKey,
-    lookupTable: alt_address,
-  });
-  let tx = new solanaWeb3.Transaction();
-  tx.add(deactiveALTIx);
-  tx.recentBlockhash = (await connection.getRecentBlockhash('confirmed')).blockhash;
-  tx.feePayer = provider.publicKey;
-  try {
-    let signedTransaction = await provider.signTransaction(tx);
-    const serializedTransaction = signedTransaction.serialize();
-    const signature = await connection.sendRawTransaction(serializedTransaction,
-    { skipPreflight: false, preflightCommitment: 'confirmed' },);        
-    console.log(`https://solscan.io/tx/${signature}?cluster=`+cluster);
-  } 
-  catch(error) {
-    console.log("Error: ", error);
-    error = JSON.stringify(error);
-    error = JSON.parse(error);
-    console.log("Error Logs: ", error);
-  }
-}
-async function closeALT(_alt_) {
-  console.log("closing alt "+_alt_);
-  let alt_address = new solanaWeb3.PublicKey(_alt_);
-  let closeALTIx = solanaWeb3.AddressLookupTableProgram.closeLookupTable({
-    authority: provider.publicKey,
-    lookupTable: alt_address,
-    recipient: provider.publicKey,
-  });
-  let tx = new solanaWeb3.Transaction();
-  tx.add(closeALTIx);
-  tx.recentBlockhash = (await connection.getRecentBlockhash('confirmed')).blockhash;
-  tx.feePayer = provider.publicKey;
-  try {
-    let signedTransaction = await provider.signTransaction(tx);
-    const serializedTransaction = signedTransaction.serialize();
-    const signature = await connection.sendRawTransaction(
-        serializedTransaction,
-        { skipPreflight: false, preflightCommitment: 'confirmed' },
-    );        
-    console.log(`https://solscan.io/tx/${signature}?cluster=`+cluster); 
-  }
-  catch(error) {
-    console.log("Error: ", error);
-    error = JSON.stringify(error);
-    error = JSON.parse(error);  
-    console.log("Error Logs: ", error);
-    return;
-  }  
-}
+
+// burn a cnft
 async function mcburnjs(_asset_,_priority_,_helius_,_program_,_alt_,_cluster_) { 
     
     let connection = new solanaWeb3.Connection(_helius_, "confirmed");
@@ -332,21 +284,77 @@ async function mcburnjs(_asset_,_priority_,_helius_,_program_,_alt_,_cluster_) {
     }
   
 }
+
+// deactivate a helper alt
+async function deactivateALT(_alt_,_helius_,_cluster_) {
+  console.log("deactivating alt "+_alt_);
+  let connection = new solanaWeb3.Connection(_helius_, "confirmed");
+  let alt_address = new solanaWeb3.PublicKey(_alt_);
+  let deactiveALTIx = solanaWeb3.AddressLookupTableProgram.deactivateLookupTable({
+    authority: provider.publicKey,
+    lookupTable: alt_address,
+  });
+  let tx = new solanaWeb3.Transaction();
+  tx.add(deactiveALTIx);
+  tx.recentBlockhash = (await connection.getRecentBlockhash('confirmed')).blockhash;
+  tx.feePayer = provider.publicKey;
+  try {
+    let signedTransaction = await provider.signTransaction(tx);
+    const serializedTransaction = signedTransaction.serialize();
+    const signature = await connection.sendRawTransaction(serializedTransaction,
+    { skipPreflight: false, preflightCommitment: 'confirmed' },);        
+    console.log(`https://solscan.io/tx/${signature}?cluster=`+_cluster_);
+  } 
+  catch(error) {
+    console.log("Error: ", error);
+    error = JSON.stringify(error);
+    error = JSON.parse(error);
+    console.log("Error Logs: ", error);
+  }
+}
+
+// close a helper alt and recover the rent
+async function closeALT(_alt_,_helius_,_cluster_) {
+  console.log("closing alt "+_alt_);
+  let connection = new solanaWeb3.Connection(_helius_,"confirmed");
+  let alt_address = new solanaWeb3.PublicKey(_alt_);
+  let closeALTIx = solanaWeb3.AddressLookupTableProgram.closeLookupTable({
+    authority: provider.publicKey,
+    lookupTable: alt_address,
+    recipient: provider.publicKey,
+  });
+  let tx = new solanaWeb3.Transaction();
+  tx.add(closeALTIx);
+  tx.recentBlockhash = (await connection.getRecentBlockhash('confirmed')).blockhash;
+  tx.feePayer = provider.publicKey;
+  try {
+    let signedTransaction = await provider.signTransaction(tx);
+    const serializedTransaction = signedTransaction.serialize();
+    const signature = await connection.sendRawTransaction(
+        serializedTransaction,
+        { skipPreflight: false, preflightCommitment: 'confirmed' },
+    );        
+    console.log(`https://solscan.io/tx/${signature}?cluster=`+_cluster_); 
+  }
+  catch(error) {
+    console.log("Error: ", error);
+    error = JSON.stringify(error);
+    error = JSON.parse(error);  
+    console.log("Error Logs: ", error);
+    return;
+  }  
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
 // usage
 if(provider != null){
-
-// usage
-// asset id, priority fee, helius endpoint, program id, static alt, cluster keyword
-mcburnjs("5CtTN62isci9KxLeAPHkFb2pxzP6NDkVLMo9bseu7WpJ",priority,rpc,burner,static_alt,cluster);
-
-// if the extra alt was created then you can deactivate it after (n)?
-//   deactivateALT("XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-
-// after deactivation you can colose the alt to recover funds after (n)?
-//   closeALT("XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-
+  // asset id, priority fee, helius endpoint, program id, static alt, cluster keyword
+  mcburnjs("5CtTN62isci9KxLeAPHkFb2pxzP6NDkVLMo9bseu7WpJ",priority,rpc,burner,static_alt,cluster);
+  // if the extra alt was created then you can deactivate it after (n)?
+  //   deactivateALT("XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+  // after deactivation you can colose the alt to recover funds after (n)?
+  //   closeALT("XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 }
 ////////////////////////////////////////////////////////////////////////////////
