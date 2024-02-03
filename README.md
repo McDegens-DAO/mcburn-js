@@ -6,7 +6,7 @@ A javascript example calling the mcburn cNFT burner program.
 
 This repo is derived from working code however this repo itself has not been tested.
 
-You can find the OSS Rust repo here: https://github.com/honeygrahams2/mcburn
+You can find the OSS Rust repo here: [mcburn](https://github.com/honeygrahams2/mcburn)
 
 Deployed Program Id: GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i
 
