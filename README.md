@@ -17,7 +17,7 @@ You can find the open source Rust repo here: [mcburn](https://github.com/honeygr
 # Js Settings
 
 ```javascript
-const rpc = "https://rpc.helius.xyz/?api-key=XXXXXXXXXXXXXXXXXXXXXXX"; //helius
+const rpc = "https://rpc.helius.xyz/?api-key=XXXXXXXXXXXXXXXXXXXXXXX"; // helius
 const priority = 20; // lamports (priority fee)
 const cluster = "mainnet"; // mainnet or devnet
 const burner = "GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i"; // burner program
