@@ -12,7 +12,7 @@ It is meant to show basic usage examples and is currently in development.
 
 You can find the open source mcburn Rust program repo here: [mcburn](https://github.com/honeygrahams2/mcburn)
 
-Ours is deployed here, and successfully burns every cNFT we send it.
+Our program is deployed on Solana mainnet here:
 
 **Program Id:** GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i
 
