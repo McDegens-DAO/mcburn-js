@@ -8,7 +8,7 @@ This repo is derived from working code however this repo itself has not been tes
 
 You can find the open source Rust repo here: [mcburn](https://github.com/honeygrahams2/mcburn)
 
-Deployed Program Id: GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i
+Program Id: GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i
 
 # Static ALT?
 (lookup table)
