@@ -15,7 +15,7 @@ Deployed Program Id: GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i
 
 In some cases multiple transactions are required to burn stubborn cNFTS.
 
-For example if there are > 23 proofs passed in the ix, there will first need to be a tx to create a *Helper ALT* prior to the burn transaction.
+For example if there are > 23 proofs passed in the ix, there will first be a tx to create a *Helper ALT* prior to the burn transaction.
 
 **Recouping ALT Rent**
 
