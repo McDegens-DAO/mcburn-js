@@ -1,10 +1,10 @@
 # mcburn-js
 
-Example javascript functions for interacting with the **mcburn** cNFT burner program for Solana.
+Javascript functions for interacting with the **mcburn** cNFT burner program for Solana.
 
 # ATTN!
 
-This repo is not production ready out of the box.
+This repo is not production ready out of the box. It is meant to show basic usage examples.
 
 # Program
 
