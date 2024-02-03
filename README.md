@@ -8,7 +8,7 @@ This repo is not production ready out of the box.
 
 It is meant to show basic usage examples and is currently in development.
 
-# Program
+# Solana Program
 
 You can find the open source mcburn Rust program repo here: [mcburn](https://github.com/honeygrahams2/mcburn)
 
