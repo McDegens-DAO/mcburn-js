@@ -43,6 +43,6 @@ Since the ALT requires rent you have to save the *Helper ALT* address so that yo
 
 There are some timing events that have to be considered. You can not deactivate a *Helper ALT* imediately after burning and you can not close a *Helper ALT* imediately after deactivating it. The timing required may be by slots passed or blockhash expiration, we don't know yet. Currently we're just waiting 5 minutes after the burn to deactivate, and then another 5 min before closing. We will run more tests to narrow this timing down and dumify the flow.
 
-# Devs
+# Apps
 
-Burner apps may want to consider handling the Helper ALT creation and reclaiming of rent on their backend to simplify the front end flow for their users.
+Wallet providers and burner apps may want to consider handling the *Helper ALT* creation and reclaiming of rent on their backend to simplify the front end flow for their users.
