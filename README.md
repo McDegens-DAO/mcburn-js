@@ -10,8 +10,21 @@ You can find the OSS Rust repo here: https://github.com/honeygrahams2/mcburn
 
 Deployed Program Id: GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i
 
+# Static ALT?
+(lookup table)
+
+The mcburn Solana program uses a predefined ALT we call a the *Static ALT* where common program ids are stored to reduce the overall tx size of the burn.
+
+There are 5 *Lookup Table Entries* in the *Static ALT* that are used by default in every tx:
+
+1. Burner Program Id
+2. System Program Id
+3. State Compression Program Id
+4. Noop Program Id
+5. Bubblegum Program Id
+
 # Helper ALT?
-(aka lookup table)
+(lookup table)
 
 In some cases multiple transactions are required to burn stubborn cNFTS.
 
