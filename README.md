@@ -29,4 +29,4 @@ There are some timing events that have to be considered. You can not deactivate 
 
 # Devs
 
-Burner apps may want to consider handling the Helper ALT creation and reclaiming of funds on their backend to simplify the front end flow for their users.
+Burner apps may want to consider handling the Helper ALT creation and reclaiming of rent on their backend to simplify the front end flow for their users.
