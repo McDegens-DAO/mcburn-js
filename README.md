@@ -13,7 +13,9 @@ Deployed Program Id: GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i
 # ALT? 
 (aka lookup table)
 
-If there are > 23 proofs in the burn ix, there will first be a tx to create a required *Helper ALT*.
+In some cases multiple transactions are required to burn stubborn cNFTS.
+
+For example if there are > 23 proofs passed in the burn ix, there will first be a tx to create a required *Helper ALT*, followed by the burn transaction.
 
 Since the ALT requires rent you should save the *Helper ALT* address so that you can deactivate it and close it to recover funds. Please note that only the signer can reclaim funds.
 
