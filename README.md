@@ -29,13 +29,19 @@ const burner = "GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i"; // burner program
   mcburnjs("CNFT_ASSET_ID", priority, rpc, burner, static_alt, cluster);
 ```
 
-**Deactivate ALT** (only if one was needed for the burn)
+**Deactivate Helper ALT** 
+
+(only if one was needed for the burn)
+
 ```javascript
   // helper alt, helius endpoint, cluster keyword
   deactivateALT("HELPER_ALT_ADDRESS", rpc, cluster);
 ```
 
-**Close ALT** (must deactivate first)
+**Close Helper ALT** 
+
+(must deactivate first)
+
 ```javascript
   // helper alt, helius endpoint, cluster keyword
   closeALT("HELPER_ALT_ADDRESS", rpc, cluster);
