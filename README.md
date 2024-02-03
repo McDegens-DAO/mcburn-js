@@ -6,13 +6,21 @@ Example javascript functions for interacting with the **mcburn** cNFT burner pro
 
 This repo is not production ready out of the box.
 
-
-
 # Program
 
 You can find the open source Rust repo here: [mcburn](https://github.com/honeygrahams2/mcburn)
 
 **Program Id:** GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i
+
+# Js Settings
+
+```javascript I'm A tab
+console.log('Code Tab A');
+```
+```javascript I'm tab B
+console.log('Code Tab B');
+```
+
 
 # Static ALT
 (lookup table)
