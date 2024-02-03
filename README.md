@@ -66,7 +66,7 @@ There are 5 *Lookup Table Entries* in the *Static ALT* that are used by default 
 
 In some cases multiple transactions are required to burn a stubborn cNFT.
 
-**Example:**
+**Example**
 
 If there are > 23 proofs passed in the ix, there will first be a tx to create a *Helper ALT* prior to the burn transaction. The *Helper ALT* is used in this case to store the extra proofs that would blow the tx size limit. The source in this repo was written to 
 
