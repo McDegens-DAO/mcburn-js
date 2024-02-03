@@ -10,10 +10,12 @@ This repo is derived from working code however it does not work out of the box g
 
 You can find the open source Rust repo here: [mcburn](https://github.com/honeygrahams2/mcburn)
 
-Program Id: GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i
+**Program Id:** GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i
 
 # Static ALT?
 (lookup table)
+
+**Address:** GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i
 
 The mcburn Solana program uses a predefined ALT we call a the *Static ALT* where common program ids are stored to reduce the overall tx size of the burn.
 
