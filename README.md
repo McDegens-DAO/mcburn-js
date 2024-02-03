@@ -40,7 +40,7 @@ const burner = "GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i"; // burner program
 
 **Close Helper ALT** 
 
-(must deactivate first)
+(must be deactivated first)
 
 ```javascript
   // helper alt, helius endpoint, cluster keyword
