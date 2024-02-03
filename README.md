@@ -14,7 +14,7 @@ You can find the open source Rust repo here: [mcburn](https://github.com/honeygr
 
 **Program Id:** GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i
 
-# Static ALT?
+# Static ALT
 (lookup table)
 
 **Address:** 6NVtn6zJDzSpgPxPRtd6UAoWkDxmuqv2HgCLLJEeQLY
@@ -28,7 +28,7 @@ There are 5 *Lookup Table Entries* in the *Static ALT* that are used by default 
 4. Noop Program Id
 5. Bubblegum Program Id
 
-# Helper ALT?
+# Helper ALT
 (lookup table)
 
 In some cases multiple transactions are required to burn a stubborn cNFT.
