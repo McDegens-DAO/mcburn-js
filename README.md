@@ -4,7 +4,7 @@ Javascript functions for interacting with the **mcburn** cNFT burner program for
 
 # ATTN!
 
-This repo is not production ready out of the box. It is meant to show basic usage examples.
+This repo is not production ready out of the box. It is meant to show basic usage examples and is currently in development.
 
 # Program
 
