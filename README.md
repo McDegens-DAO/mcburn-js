@@ -12,7 +12,7 @@ It is meant to show basic usage examples and is currently in development.
 
 # Solana Program
 
-You can find the open source mcburn Rust program repo here: [mcburn](https://github.com/honeygrahams2/mcburn)
+You can find the fully functional open source mcburn Rust repo here: [mcburn](https://github.com/honeygrahams2/mcburn)
 
 Our program is deployed on Solana mainnet as:
 
