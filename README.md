@@ -182,6 +182,24 @@ in "blocks" in your terminal and retry once per min until it's permitted to be c
   npm run mcburn close <altAddress>
 ```
 
+**example output**
+```javascript
+npm run mcburn close B43LkievT1y9V51a8NENVVURA7NJ2EoF6EHZqgJqyAWa
+
+> mcburn@0.0.2 mcburn
+> node mcburn.js close B43LkievT1y9V51a8NENVVURA7NJ2EoF6EHZqgJqyAWa
+
+private key in use!
+attempting to close...  B43LkievT1y9V51a8NENVVURA7NJ2EoF6EHZqgJqyAWa
+signature:  51473hGK8gR98NK4Xf5KY7C24qKLmekDrLE1fsNz6YraNEHwtFbX2hJXjeK3h14j7rgyxeBfGrbcp8JGEpSFWtRi
+finalizing rent recovery...  B43LkievT1y9V51a8NENVVURA7NJ2EoF6EHZqgJqyAWa
+alt closed:  B43LkievT1y9V51a8NENVVURA7NJ2EoF6EHZqgJqyAWa
+funds recovered:  B43LkievT1y9V51a8NENVVURA7NJ2EoF6EHZqgJqyAWa
+done
+```
+
+
+
 # Notes
 
 **Static ALT**
