@@ -115,7 +115,12 @@ funds recovered:  GxXLjXfreP3WceAue8HzJyaLr8TrDBESWtMCjRrqtopu
 done
 ```
 
-
+**burn and stop option**
+Passing an additional "true" argument after the token id will stop the script after the burn. 
+If the burn required an ALT, the ALT would then be orphaned. You would then have to deactivate and close the ALT using the commands below.
+```javascript
+  npm run mcburn torch <tokenId> true
+```
 
 
 
