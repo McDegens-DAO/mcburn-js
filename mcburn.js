@@ -656,7 +656,7 @@ if(provider != null){(async() => {
       await mcburn(commands[1],priority,rpc,burner,static_alt,false,commands[2]);
     }
     else if(commands[0]=="deactivate"){
-      if(typeof commands[2] != "undefined" && commands[2] == true){
+      if(typeof commands[2] != "undefined" && commands[2] === true){
         await altDeactivate(commands[1],rpc,true);
       }
       else{
