@@ -111,7 +111,7 @@ In some cases multiple transactions are required to burn a stubborn cNFT.
 
 **Example**
 
-If there are > 23 proofs passed in the ix, there will first be a tx to create a *Helper ALT* prior to the burn transaction. The *Helper ALT* is used in this case to store the extra proofs that would blow the tx size limit.
+If there are > 22 proofs passed in the ix, there will first be a tx to create a *Helper ALT* prior to the burn transaction. The *Helper ALT* is used in this case to store the extra proofs that would blow the tx size limit.
 
 **ALT Rent**
 
