@@ -8,31 +8,31 @@ This CLI serves as a personal wallet hygiene tool for forcefully burning a cNFT.
 
 It is especically helpful when the cNFT appears to be "unburnable" by other means.
 
-burn a cnft
+**burn a cnft**
 ```javascript
 npm run mcburn torch <tokenId>
 ```
-burn a cnft but do not deactivate the helper alt (if one exist)
+**burn a cnft but do not deactivate the helper alt** (if one exist)
 ```javascript
 npm run mcburn torch <tokenId> true
 ```
-retry burn using an existing alt address
+**retry burn using an existing alt address**
 ```javascript
 npm run mcburn retry <tokenId> false <altAddress>
 ```
-retry burn using an existing alt address but do not deactivate helper alt
+**retry burn using an existing alt address but do not deactivate helper alt**
 ```javascript
 npm run mcburn retry <tokenId> true <altAddress>
 ```
-deactivate a helper alt and try to close it
+**deactivate a helper alt and try to close it**
 ```javascript
 npm run mcburn deactivate <altAddress>
 ```
-deactivate a helper alt and do not try to close it
+**deactivate a helper alt and do not try to close it**
 ```javascript
 npm run mcburn deactivate <altAddress> true
 ```
-close a helper alt and recover funds
+**close a helper alt and recover funds**
 ```javascript
 npm run mcburn close <altAddress>
 ```
