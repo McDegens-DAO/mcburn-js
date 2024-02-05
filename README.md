@@ -52,7 +52,7 @@ const throttle = 5000; // more if your rpc limits are low
 
 # Commands
 
-**torch**
+**mcburn torch**
 
 The torch command will run a complete burn. Please be advised that if there are more than 
 22 proofs being passed for the cNFT, the creation of a ALT (lookup table) 
@@ -130,14 +130,14 @@ If the burn required an ALT, the ALT would then be orphaned. You would then have
 
 
 
-**retry**
+**mcburn retry**
 
 In the case where an ALT is created but the burn transaction fails, you should use the **retry** command to continue where you left off while using the ALT address that was already created and paid for.
 ```javascript
   npm run mcburn retry <tokenId> false <altAddress>
 ```
 
-**deactivate**
+**mcburn deactivate**
 
 If you have an orphaned ALT that you need to deactivate you can do it directly with this command.
 ```javascript
@@ -180,7 +180,7 @@ Passing **true** as an additional argument will attempt to deactivate the ALT wi
   npm run mcburn deactivate <altAddress> true
 ```
 
-**close**
+**mcburn close**
 
 Once deactivated you can then close an ALT to recoup its rent. Before an ALT can be closed it must first have been deactivated. 
 Closing an ALT cannot be done immediately after deactivation. If you run **mcburn close** immediately, it will display the remaining wait time 
