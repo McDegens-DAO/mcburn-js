@@ -173,6 +173,8 @@ funds recovered:  ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
 done
 ```
 
+**deactivate and stop**
+
 Passing **true** as an additional argument will attempt to deactivate the ALT without trying to close if afterwards.
 ```javascript
   npm run mcburn deactivate <altAddress> true
