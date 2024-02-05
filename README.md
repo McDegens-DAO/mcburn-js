@@ -15,10 +15,10 @@ npm run mcburn torch <tokenId>
 // torch a cnft but do not deactivate the helper alt (if one exist)
 npm run mcburn torch <tokenId> true
 
-// retry full burn using an existing alt address
+// retry torch using an existing alt address
 npm run mcburn retry <tokenId> false <altAddress>
 
-// retry burn using an existing alt address but do not deactivate helper alt
+// retry torch using an existing alt address but do not deactivate helper alt
 npm run mcburn retry <tokenId> true <altAddress>
 
 // deactivate a helper alt and try to close it
