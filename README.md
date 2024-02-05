@@ -16,11 +16,11 @@ burn a cnft but do not deactivate the helper alt (if one exist)
 ```javascript
 npm run mcburn torch <tokenId> true
 ```
-retry torch using an existing alt address
+retry burn using an existing alt address
 ```javascript
 npm run mcburn retry <tokenId> false <altAddress>
 ```
-retry torch using an existing alt address but do not deactivate helper alt
+retry burn using an existing alt address but do not deactivate helper alt
 ```javascript
 npm run mcburn retry <tokenId> true <altAddress>
 ```
