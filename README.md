@@ -1,12 +1,21 @@
 # mcburn-js
 
 A Node.js based CLI for interacting with the **mcburn** cNFT burner program for Solana.
+```javascript
+npm run mcburn torch <tokenId>
+npm run mcburn torch <tokenId> true
+npm run mcburn retry <tokenId> false <altAddress>
+npm run mcburn retry <tokenId> true <altAddress>
+npm run mcburn deactivate <altAddress>
+npm run mcburn deactivate <altAddress> true
+npm run mcburn close <altAddress>
+```
 
 This CLI serves as a personal wallet hygiene tool for forcefully burning a cNFT.
 
 **mcburn** allows you to burn a cNFT without connecting your wallet to an external application.
 
-It is espeically helpful when the cNFT appears to be "unburnable" by other means.
+It is especically helpful when the cNFT appears to be "unburnable" by other means.
 
 For bulk burning we recommend the [Sol Incinerator](https://sol-incinerator.com/) application.
 
