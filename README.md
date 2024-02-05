@@ -11,22 +11,28 @@ It is especically helpful when the cNFT appears to be "unburnable" by other mean
 ```javascript
 // torch a cnft
 npm run mcburn torch <tokenId>
-
+```
+```javascript
 // torch a cnft but do not deactivate the helper alt (if one exist)
 npm run mcburn torch <tokenId> true
-
+```
+```javascript
 // retry torch using an existing alt address
 npm run mcburn retry <tokenId> false <altAddress>
-
+```
+```javascript
 // retry torch using an existing alt address but do not deactivate helper alt
 npm run mcburn retry <tokenId> true <altAddress>
-
+```
+```javascript
 // deactivate a helper alt and try to close it
 npm run mcburn deactivate <altAddress>
-
+```
+```javascript
 // deactivate a helper alt and do not try to close it
 npm run mcburn deactivate <altAddress> true
-
+```
+```javascript
 // close a helper alt and recover funds
 npm run mcburn close <altAddress>
 ```
