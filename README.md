@@ -45,7 +45,7 @@ const burner = "GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i"; // burner program
 const throttle = 5000; // more if your rpc limits are low
 ```
 
-# Terminal Usage
+# Commands
 
 **torch**
 
