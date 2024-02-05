@@ -6,7 +6,7 @@ This CLI serves as a personal wallet hygiene tool for forcefully burning a cNFT.
 
 It is espeically helpful when the cNFT appears to be "unburnable" by other means.
 
-**mcburn-js** allows you to burn a cNFT without connecting to an application.
+**mcburn-js** allows you to burn a cNFT without connecting your wallet to an external application.
 
 For bulk burning we recommend the [Sol Incinerator](https://sol-incinerator.com/) application.
 
