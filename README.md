@@ -61,14 +61,6 @@ to recoup the rent for you.
 ```
 
 **example output**
-
-**retry**
-
-In the case where an ALT is created but the burn transaction fails, you should use the **retry** command to continue where you left off while using the ALT address that was already created and paid for.
-```javascript
-  npm run mcburn retry <tokenId> false <altAddress>
-```
-
 ```javascript
 npm run mcburn torch 8yriTfMg1BQDyaD7X2mUpeXSTe6W4Q91SwxupHnThWv1
 
@@ -123,6 +115,15 @@ done
 ```
 
 
+
+
+
+**retry**
+
+In the case where an ALT is created but the burn transaction fails, you should use the **retry** command to continue where you left off while using the ALT address that was already created and paid for.
+```javascript
+  npm run mcburn retry <tokenId> false <altAddress>
+```
 
 **deactivate**
 
