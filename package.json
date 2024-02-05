@@ -2,7 +2,7 @@
   "name": "mcburn",
   "version": "0.0.2",
   "description": "Burn a stubborn cNFT",
-  "main": "app.js",
+  "main": "mcburn.js",
   "keywords": [
     "cnft",
     "burner",
