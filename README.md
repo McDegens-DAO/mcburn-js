@@ -4,7 +4,7 @@ A Node.js based CLI for interacting with the **mcburn** cNFT burner program for 
 
 This CLI serves as a personal wallet hygiene tool for forcefully burning a cNFT.
 
-**mcburn-js** allows you to burn a cNFT without connecting your wallet to an external application.
+**mcburn** allows you to burn a cNFT without connecting your wallet to an external application.
 
 It is espeically helpful when the cNFT appears to be "unburnable" by other means.
 
