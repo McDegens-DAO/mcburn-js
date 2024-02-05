@@ -1,6 +1,7 @@
 {
   "name": "mcburn",
   "version": "0.0.2",
+  "type": "module",
   "description": "Burn a stubborn cNFT",
   "main": "mcburn.js",
   "keywords": [
