@@ -209,6 +209,4 @@ If there are > 22 proofs passed in the ix, there will first be a tx to create a 
 
 **ALT Rent**
 
-Since the ALT requires rent you have to save the *Helper ALT* address so that you can deactivate it and close it to recover funds. Please note that only the ALT creator can perform these actions and reclaim funds. When a *Helper ALT* is created the console logs will display this message followed by the *Helper ALT* address: 
-
-ALT HELPER ADDRESS: <alt-address>
+Since the ALT requires rent you have to save the *Helper ALT* address so that you can deactivate it and close it to recover funds. Please note that only the ALT creator can perform these actions and reclaim funds.
