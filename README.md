@@ -31,12 +31,12 @@ git clone https://github.com/McDegens-DAO/mcburn-js.git
 npm install
 ```
 5. Open **mcburn.js** in your editor.
-
+```javascript
 • add your private keypair 
-
 • add your helius endpoint
-
 • save mcburn.js and close
+```
+
 
 # Terminal Usage
 
