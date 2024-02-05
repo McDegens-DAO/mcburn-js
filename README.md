@@ -6,6 +6,8 @@ This CLI serves as a personal wallet hygiene tool for forcefully burning a cNFT.
 
 It is espeically helpful when the cNFT appears to be "unburnable" by other means.
 
+For bulk burning we recommend [Sol Incinerator](https://sol-incinerator.com/)
+
 # Solana Program
 
 **Program Id:** GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i
