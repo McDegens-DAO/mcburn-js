@@ -1,6 +1,6 @@
 # mcburn-js
 
-Javascript functions for interacting with the **mcburn** cNFT burner program for Solana.
+A Node JS based CLI for interacting with the **mcburn** cNFT burner program for Solana.
 
 # ATTN!
 
