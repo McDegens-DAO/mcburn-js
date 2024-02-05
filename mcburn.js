@@ -240,10 +240,13 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
           else if(tx_status.value[0].confirmationStatus=="finalized") {
             clearInterval(finalize);
             console.log("asset burned: ",assetId);
-            if(_deactivate_===false){
+            if(_deactivate_==false){
               await new Promise(_=>setTimeout(_,throttle));
               await altDeactivate(proofALTAddress.toBase58(),_helius_);
               return "deactivated";
+            }
+            else{
+              return;
             }
           }
           i++;
@@ -256,7 +259,12 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
       catch(error) {
         console.log("replay error!");
         console.log("running the following command to try again");
-        console.log("npm run mcburn retry "+assetId+" "+proofALTAddress.toBase58());
+        if(_deactivate_==false){
+          console.log("npm run mcburn retry "+assetId+" false "+proofALTAddress.toBase58());
+        }
+        else{
+          console.log("npm run mcburn retry "+assetId+" true "+proofALTAddress.toBase58());
+        }
         console.log(assetId);
         error = JSON.stringify(error);
         error = JSON.parse(error);
@@ -434,10 +442,13 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
                 else if(tx_status.value[0].confirmationStatus == "finalized") {
                   clearInterval(finalize);
                   console.log("asset burned: ",assetId);
-                  if(_deactivate_ === false){
+                  if(_deactivate_ == false){
                     await new Promise(_=>setTimeout(_,throttle));
                     await altDeactivate(proofALTAddress.toBase58(),_helius_);
                     return "deactivated";
+                  }
+                  else{
+                    return;
                   }
                 }
                 i++;
@@ -650,10 +661,20 @@ if(provider != null){(async() => {
       return;
     }
     if(commands[0]=="torch"){
-      await mcburn(commands[1],priority,rpc,burner,static_alt);
+      if(typeof commands[2] != "undefined" && commands[2] == "true"){
+        await mcburn(commands[1],priority,rpc,burner,static_alt,true);
+      }
+      else{
+        await mcburn(commands[1],priority,rpc,burner,static_alt);
+      }
     }
     else if(commands[0]=="retry"){
-      await mcburn(commands[1],priority,rpc,burner,static_alt,false,commands[2]);
+      if(typeof commands[2] != "undefined" && commands[2] == "true"){
+        await mcburn(commands[1],priority,rpc,burner,static_alt,true,commands[3]);
+      }
+      else{
+        await mcburn(commands[1],priority,rpc,burner,static_alt,false,commands[3]);
+      }
     }
     else if(commands[0]=="deactivate"){
       if(typeof commands[2] != "undefined" && commands[2] == "true"){
