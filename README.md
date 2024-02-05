@@ -27,7 +27,7 @@ npm run mcburn deactivate <altAddress>
 // deactivate a helper alt and do not try to close it
 npm run mcburn deactivate <altAddress> true
 
-// close a helper alt and reciver funds
+// close a helper alt and recover funds
 npm run mcburn close <altAddress>
 ```
 
