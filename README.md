@@ -60,7 +60,7 @@ to recoup the rent for you.
   npm run mcburn torch <tokenId>
 ```
 
-**nretry**
+**retry**
 
 In the case where an ALT is created but the burn transaction fails, you should use the **retry** command to continue where you left off while using the ALT address that was already created and paid for.
 ```javascript
