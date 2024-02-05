@@ -39,15 +39,6 @@ npm run mcburn close <altAddress>
 
 For bulk burning we recommend the [Sol Incinerator](https://sol-incinerator.com/) application.
 
-
-# Solana Program
-
-**Program Id:** GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i
-
-You can find the open source **mcburn** Rust repo here: [mcburn](https://github.com/honeygrahams2/mcburn)
-
-Our program is deployed on Solana mainnet and all are welcome to use it.
-
 # Installing mcburn-js
 
 1. Start a new Node.js project.
@@ -266,3 +257,11 @@ If there are > 22 proofs passed in the ix, there will first be a tx to create a 
 **ALT Rent**
 
 Since the ALT requires rent you have to save the *Helper ALT* address so that you can deactivate it and close it to recover funds. Please note that only the ALT creator can perform these actions and reclaim funds.
+
+# Solana Program
+
+**Program Id:** GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i
+
+You can find the open source **mcburn** Rust repo here: [mcburn](https://github.com/honeygrahams2/mcburn)
+
+Our program is deployed on Solana mainnet and all are welcome to use it.
