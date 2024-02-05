@@ -185,6 +185,7 @@ in "blocks" in your terminal and retry once per min until it's permitted to be c
 # Notes
 
 **Static ALT**
+
 (lookup table)
 
 Address: 6NVtn6zJDzSpgPxPRtd6UAoWkDxmuqv2HgCLLJEeQLY
@@ -199,6 +200,7 @@ There are 5 *Lookup Table Entries* in the *Static ALT* that are used by default 
 5. Bubblegum Program Id
 
 **Helper ALT**
+
 (lookup table)
 
 In some cases multiple transactions are required to burn a stubborn cNFT.
