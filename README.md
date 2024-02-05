@@ -1,57 +1,61 @@
 # mcburn-js
 
-A Node JS based CLI for interacting with the **mcburn** cNFT burner program for Solana.
+A Node.js based CLI for interacting with the **mcburn** cNFT burner program for Solana.
 
-# ATTN!
+This CLI serves as a personal wallet hygiene tool for forcefully burning a cNFT.
 
-mcburn-js is a work in progress!
-
-I will announce on Twitter when it's ready.
-
-It is meant to show basic usage examples and is currently in development.
+It is espeically helpful when the cNFT appears to be "unburnable". 
 
 # Solana Program
 
-You can find the fully functional open source mcburn Rust repo here: [mcburn](https://github.com/honeygrahams2/mcburn)
-
-Our program is deployed on Solana mainnet as:
-
 **Program Id:** GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i
 
-# Js Settings
+You can find the open source **mcburn** Rust repo here: [mcburn](https://github.com/honeygrahams2/mcburn)
+
+Our program is deployed on Solana mainnet and all are welcome to use it.
+
+# Installing mcburn-js
+
+1. Start a new Node.js project.
+
+2. Navigate to your project root and run this command in your terminal to clone the repo:
 
 ```javascript
-const rpc = "https://rpc.helius.xyz/?api-key=XXXXXXXXXXXXXXXXXXXXXXX"; // helius
-const priority = 20; // lamports (priority fee)
-const cluster = "mainnet"; // mainnet or devnet
-const burner = "GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i"; // burner program
+git clone https://github.com/McDegens-DAO/mcburn-js.git
 ```
+3. Move the downloaded files to your project root.
+
+4. Run this command in your terminal to install required modules:
+
+```javascript
+npm install
+```
+5. Open **mcburn.js** in your editor.
+• add your private keypair 
+• add your helius endpoint
+• save the file and close
 
 # Usage
 
-**Burn**
+**mcburn torch**
+
+This will run a complete burn. Please be advised that if there are more than 
+22 proofs being passed for the cNFT, the creation of a ALT (lookup table) 
+is required first which requires rent that you will be reclaimed.
+The **torch** command will attempt to create the ALT automatically and continue the burning process.
 ```javascript
-  // asset id, priority fee, helius endpoint, program id, static alt, cluster keyword
-  mcburnjs("CNFT_ASSET_ID", priority, rpc, burner, static_alt, cluster);
+  npm run mcburn torch <tokenId>
 ```
 
-**Deactivate Helper ALT** 
+**mcburn retry**
 
-(only if one was needed for the burn)
-
+In the case where an ALT is created but the burn transaction fails, you should use the **retry** command to continue where you left off while using the ALT address that was already created and paid for.
 ```javascript
-  // helper alt, helius endpoint, cluster keyword
-  deactivateALT("HELPER_ALT_ADDRESS", rpc, cluster);
+  npm run mcburn retry <tokenId> <altAddress>
 ```
 
-**Close Helper ALT** 
 
-(must be deactivated first)
 
-```javascript
-  // helper alt, helius endpoint, cluster keyword
-  closeALT("HELPER_ALT_ADDRESS", rpc, cluster);
-```
 
 # Static ALT
 (lookup table)
