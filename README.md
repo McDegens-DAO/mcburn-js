@@ -38,7 +38,7 @@ npm install
 ```
 ```javascript
 // settings
-let keypair = [0,0,0,"~"];
+let keypair = [0,0,0,"~"]; // this is your private keypair, be careful
 const rpc = "https://rpc.helius.xyz/?api-key=xxxxxxxxxx"; // helius
 const priority = 20; // lamports (priority fee)
 const burner = "GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i"; // burner program
