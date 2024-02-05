@@ -17,8 +17,8 @@ const BUBBLEGUM = "BGUMAp9Gq7iTEuizy4pqaxsTyUCBK68MDfK752saRPUY";
 
 ////////////////////////////////////////////////////////////////////////////////
 // settings
-let keypair = [0,0,0,"~"];
-const rpc = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"; // helius
+let keypair = [0,0,0,"~"]; // this is your private keypair, be careful
+const rpc = "https://rpc.helius.xyz/?api-key=xxxxxxxxxx"; // helius
 const priority = 20; // lamports (priority fee)
 const burner = "GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i"; // burner program
 const throttle = 5000; // more if your rpc limits are low
@@ -656,7 +656,12 @@ if(provider != null){(async() => {
       await mcburn(commands[1],priority,rpc,burner,static_alt,false,commands[2]);
     }
     else if(commands[0]=="deactivate"){
-      await altDeactivate(commands[1],rpc);
+      if(typeof commands[2] != "undefined" && commands[2] == true){
+        await altDeactivate(commands[1],rpc,true);
+      }
+      else{
+        await altDeactivate(commands[1],rpc);
+      }
     }
     else if(commands[0]=="close"){
       await altClose(commands[1],rpc);
