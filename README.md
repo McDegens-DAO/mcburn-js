@@ -33,26 +33,52 @@ npm install
 5. Open **mcburn.js** in your editor.
 • add your private keypair 
 • add your helius endpoint
-• save the file and close
+• save mcburn.js and close
 
-# Usage
+# Terminal Usage
 
-**mcburn torch**
+**npm run mcburn torch**
 
 This will run a complete burn. Please be advised that if there are more than 
 22 proofs being passed for the cNFT, the creation of a ALT (lookup table) 
 is required first which requires rent that you will be reclaimed.
-The **torch** command will attempt to create the ALT automatically and continue the burning process.
+The **torch** argument will attempt to create the ALT automatically when necessary 
+and continue the burning process. In these cases it can take some time for the burn 
+process to complete because it will attempt to deactivate and close the ALT after burning 
+to recoup the rent for you. 
 ```javascript
   npm run mcburn torch <tokenId>
 ```
 
-**mcburn retry**
+**npm run mcburn retry**
 
 In the case where an ALT is created but the burn transaction fails, you should use the **retry** command to continue where you left off while using the ALT address that was already created and paid for.
 ```javascript
   npm run mcburn retry <tokenId> <altAddress>
 ```
+
+**npm run mcburn deactivate**
+
+If you have an orphaned ALT that you need to deactivate you can do it directly with this command.
+```javascript
+  npm run mcburn deactivate <altAddress>
+```
+
+Passing **true** as an additional argument will attempt to deactivate the ALT without trying to close if afterwards.
+```javascript
+  npm run mcburn deactivate <altAddress> true
+```
+
+**npm run mcburn close**
+
+Once deactivated you can then close an ALT to recoup its rent. Before an ALT can be closed it must first have been deactivated. 
+Closing an ALT cannot be done immediately after deactivation. If you run **mcburn close** immediately, it will display the remaining wait time 
+in "blocks" in your terminal and retry once per min until it's permitted to be closed.
+```javascript
+  npm run mcburn close <altAddress>
+```
+
+
 
 
 
