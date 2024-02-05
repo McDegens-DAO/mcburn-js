@@ -520,35 +520,35 @@ async function altDeactivate(_alt_,_helius_,_close_=false) {
       } 
       else if(tx_status.value[0].confirmationStatus=="finalized") {
         clearInterval(finalize_deactivation);
+        console.log("helper deactivated: ", _alt_);
         // check slots to close
         let cs = 0;
         if(_close_==false){
-           console.log("helper deactivated: ", _alt_);
-           console.log("waiting to close...", _alt_);
+          console.log("waiting to close...", _alt_);
           const check_slots = setInterval(async function() {
-            let closing = await altClose(_alt_,_helius_);
-            if(closing=="ok"){
-              clearInterval(check_slots);
-              console.log("done");
-            }
-            else if(Number.isInteger(closing)){
-              console.log("wait time: "+closing+" blocks...");
-            }
-            else{
-              clearInterval(check_slots);
-              console.log("...");
-//               console.log("there may have been a problem closing the alt");
-//               console.log("try running the following command to find out");
-//               console.log("npm run mcburn close "+_alt_);
-            }
-            cs++;
-            if(cs==10){
-              clearInterval(check_slots);
-              console.log("exceeded retry limit! ", _alt_);
-              console.log("done");
-            }
-          },60000);
-        }  
+          let closing = await altClose(_alt_,_helius_);
+          if(closing=="ok"){
+            clearInterval(check_slots);
+            console.log("done");
+          }
+          else if(Number.isInteger(closing)){
+            console.log("wait time: "+closing+" blocks...");
+          }
+          else{
+            clearInterval(check_slots);
+            console.log("...");
+  //               console.log("there may have been a problem closing the alt");
+  //               console.log("try running the following command to find out");
+  //               console.log("npm run mcburn close "+_alt_);
+          }
+          cs++;
+          if(cs==10){
+            clearInterval(check_slots);
+            console.log("exceeded retry limit! ", _alt_);
+            console.log("done");
+          }
+        },60000);
+        }
       }
       i++;
       if(i==20){
@@ -656,7 +656,8 @@ if(provider != null){(async() => {
       await mcburn(commands[1],priority,rpc,burner,static_alt,false,commands[2]);
     }
     else if(commands[0]=="deactivate"){
-      if(typeof commands[2] != "undefined" && commands[2] === true){
+      console.log(commands);
+      if(typeof commands[2] != "undefined" && commands[2] == "true"){
         await altDeactivate(commands[1],rpc,true);
       }
       else{
