@@ -68,7 +68,8 @@ npm run mcburn torch 8yriTfMg1BQDyaD7X2mUpeXSTe6W4Q91SwxupHnThWv1
 > node mcburn.js torch 8yriTfMg1BQDyaD7X2mUpeXSTe6W4Q91SwxupHnThWv1
 
 private key in use!
-assetId:  8yriTfMg1BQDyaD7X2mUpeXSTe6W4Q91SwxupHnThWv1data_hash:  DWqMofJFqehTD2zg3hNfEA58WRYDW7xndJoSXG1ccW2g
+assetId:  8yriTfMg1BQDyaD7X2mUpeXSTe6W4Q91SwxupHnThWv1
+data_hash:  DWqMofJFqehTD2zg3hNfEA58WRYDW7xndJoSXG1ccW2g
 creator_hash:  EKDHSGbrGztomDfuiV4iqiZ6LschDJPsFiXjZ83f92Md
 leaf_id:  3840261
 leafDelegate:  FBQHeifBur7UDEUkBV9v16TAYfhDTnpjbwV8GTdp5jMq
