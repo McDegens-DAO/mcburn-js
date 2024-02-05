@@ -139,6 +139,35 @@ If you have an orphaned ALT that you need to deactivate you can do it directly w
   npm run mcburn deactivate <altAddress>
 ```
 
+**example output**
+```javascript
+npm run mcburn deactivate ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
+
+> mcburn@0.0.2 mcburn
+> node mcburn.js deactivate ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
+
+private key in use!
+deactivate helper: ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
+deactivating... ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
+signature:  4fgEqarJ8ZiuTTQYrwvsQMAQfoW6hFwK2SHyZtP6EFxbf7AgqcRAyT19hn15kZifVvWaceyccR2zeLvbdoC1yiKP
+finalizing deactivation... ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
+helper deactivated:  ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
+waiting to close... ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
+attempting to close...  ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
+wait time: 341 blocks...
+attempting to close...  ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
+wait time: 200 blocks...
+attempting to close...  ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
+wait time: 67 blocks...
+attempting to close...  ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
+signature:  44tCvruBeGz128pPvXL4ayHmyT1SPac64QZvwtX5ZK4JwPocheZ5zCv68iCMEd6StEbqosxiEvpvHufSfruEzEe
+finalizing rent recovery...  ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
+...
+alt closed:  ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
+funds recovered:  ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
+done
+```
+
 Passing **true** as an additional argument will attempt to deactivate the ALT without trying to close if afterwards.
 ```javascript
   npm run mcburn deactivate <altAddress> true
