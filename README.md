@@ -75,8 +75,8 @@ const throttle = 5000; // more seconds if your rpc limits are being stressed
 **mcburn torch**
 
 The torch command will run a complete burn. Please be advised that if there are more than 
-22 proofs being passed for the cNFT, the creation of a ALT (lookup table) 
-is created first which requires rent that you will reclaim.
+22 proofs being passed for the cNFT, the creation of an ALT (lookup table) 
+is necessary prior to burning which requires rent, that you will reclaim.
 The **torch** command will attempt to create the ALT automatically when necessary 
 and continue the burning process. In these cases it can take some time for the burn 
 process to complete because it will attempt to deactivate and close the ALT after burning 
