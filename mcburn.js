@@ -265,7 +265,6 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
         else{
           console.log("npm run mcburn retry "+assetId+" true "+proofALTAddress.toBase58());
         }
-        console.log(assetId);
         error = JSON.stringify(error);
         error = JSON.parse(error);
       }    
@@ -461,7 +460,12 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
             catch(error) {
               console.log("replay error!");
               console.log("run the following command to try again");
-              console.log("npm run mcburn retry "+assetId+" "+proofALTAddress.toBase58());
+              if(_deactivate_==false){
+                console.log("npm run mcburn retry "+assetId+" false "+proofALTAddress.toBase58());
+              }
+              else{
+                console.log("npm run mcburn retry "+assetId+" true "+proofALTAddress.toBase58());
+              }              
               console.log("done");
               error = JSON.stringify(error);
               error = JSON.parse(error);
@@ -643,6 +647,9 @@ async function altClose(_alt_,_helius_) {
         return str;
       }
     }
+    console.log("error!");
+    console.log(error);
+    return;
   }
 }
 ////////////////////////////////////////////////////////////////////////////////
