@@ -6,7 +6,7 @@ This CLI serves as a personal wallet hygiene tool for forcefully burning a cNFT.
 
 **mcburn** allows you to burn a cNFT without connecting your wallet to an external application.
 
-It is especically helpful when the cNFT appears to be "unburnable" by other means.
+It is especically helpful when a cNFT appears to be "unburnable" by other means.
 
 **burn a cnft**
 ```javascript
