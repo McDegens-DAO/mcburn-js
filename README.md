@@ -156,6 +156,9 @@ In the case where an ALT is created but the burn transaction fails, you should u
 ```javascript
   npm run mcburn retry <tokenId> false <altAddress>
 ```
+```javascript
+  npm run mcburn retry <tokenId> true <altAddress>
+```
 
 **mcburn deactivate**
 
