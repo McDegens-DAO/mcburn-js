@@ -265,6 +265,6 @@ Since the ALT requires rent you have to save the *Helper ALT* address so that yo
 
 **Program Id:** GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i
 
-You can find the open source **mcburn** Rust repo here: [mcburn](https://github.com/honeygrahams2/mcburn)
+You can find the open source **mcburn** Rust repo here: [mcburn-rs](https://github.com/honeygrahams2/mcburn-rs)
 
 Our program is deployed on Solana mainnet and all are welcome to use it.
