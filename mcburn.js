@@ -58,7 +58,7 @@ async function getPriorityFeeEstimate(cluster, priorityLevel, transaction) {
       method: "getPriorityFeeEstimate",
       params: [
         {
-          transaction: bs58.encode(transaction.serialize()), // Pass the serialized transaction in Base58
+          transaction: bs58.encode(transaction.serialize()),
           options: { priorityLevel: priorityLevel },
         },
       ],
