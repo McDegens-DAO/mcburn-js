@@ -121,8 +121,7 @@ async function finalized(sig,max=10,int=4){
     let intervalID = setInterval(async()=>{
       let tx_status = null;
       tx_status = await connection.getSignatureStatuses([sig], {searchTransactionHistory: true,});
-      console.log(start);
-      console.log(sig);
+      console.log(start+": "+sig);
       if (tx_status != null && typeof tx_status.value != "undefined"){ 
         console.log(tx_status.value);
       }
@@ -136,6 +135,9 @@ async function finalized(sig,max=10,int=4){
       typeof tx_status.value[0] == "undefined" || 
       typeof tx_status.value[0].confirmationStatus == "undefined"){} 
       else if(tx_status.value[0].confirmationStatus == "processed"){
+        start = 1;
+      }
+      else if(tx_status.value[0].confirmationStatus == "confirmed"){
         start = 1;
       }
       else if (tx_status.value[0].confirmationStatus == "finalized"){
