@@ -24,13 +24,13 @@ const BUBBLEGUM = "BGUMAp9Gq7iTEuizy4pqaxsTyUCBK68MDfK752saRPUY";
 ////////////////////////////////////////////////////////////////////////////////
 // settings
 const keypair = [0,0,0,"~"]; // this is your private keypair, be careful
+// let keypair = null; // used for hot wallet connections
 const rpc = "https://rpc.helius.xyz/?api-key=xxxxxxxxxx"; // helius
 const priority = "Medium"; // lamports (priority fee)
 const burner = "GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i"; // burner program
 const throttle = 5000; // more seconds if your rpc limits are being stressed
 const burn_cu = 150000; // cu limit for the main burn method
 const other_cu = 100000; // cu limit for deactivating and closing alts
-// let keypair = null;
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -68,6 +68,9 @@ async function getPriorityFeeEstimate(cluster, priorityLevel, transaction) {
   data = parseInt(data.result.priorityFeeEstimate);
   return data;
 }
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
 // verifies finalized status of signature
 async function finalized(sig,max=10,int=4){
   return await new Promise(resolve => {
@@ -123,10 +126,10 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
   let cNFTBurnerProgramId = new solanaWeb3.PublicKey(_program_);
 
   const getAsset = await axiosInstance.post(heliusUrl, {
-      jsonrpc: "2.0",
-      method: "getAsset",
-      id: "rpd-op-123",
-      params: {id: assetId},
+    jsonrpc: "2.0",
+    method: "getAsset",
+    id: "rpd-op-123",
+    params: {id: assetId},
   });
   console.log("data_hash: ", getAsset.data.result.compression.data_hash);
   console.log("creator_hash: ", getAsset.data.result.compression.creator_hash);
@@ -134,17 +137,17 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
 
   let leafDelegate = provider.publicKey;
   if (getAsset.data.result.ownership.delegated == true) {
-      leafDelegate = new solanaWeb3.PublicKey(getAsset.data.result.ownership.delegate);
+    leafDelegate = new solanaWeb3.PublicKey(getAsset.data.result.ownership.delegate);
   }
   console.log("leafDelegate: ", leafDelegate.toString());  
   console.log("owner: ", getAsset.data.result.ownership.owner);
   if (getAsset.data.result.ownership.owner != provider.publicKey) {
-      console.log("Asset Not Owned by Provider");
-      return;
+    console.log("Asset Not Owned by Provider");
+    return;
   }
   if (getAsset.data.result.burnt == true) {
-      console.log("Asset Already Burned");
-      return;
+    console.log("Asset Already Burned");
+    return;
   }  
 
   console.log("fetching proof...");
@@ -157,20 +160,18 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
     params: {id: assetId},
   });
   console.log("tree_id: ", getAssetProof.data.result.tree_id);
-//   console.log("proof: ", getAssetProof.data.result.proof);
   console.log("root: ", getAssetProof.data.result.root);
 
   console.log("fetching tree...");
   await new Promise(_=>setTimeout(_,throttle));
-
+  
   const treeAccount = await splAccountCompression.ConcurrentMerkleTreeAccount.fromAccountAddress(
   connection, new solanaWeb3.PublicKey(getAssetProof.data.result.tree_id),);  
   const treeAuthorityPDA = treeAccount.getAuthority();
   const canopyDepth = treeAccount.getCanopyDepth();
   console.log("treeAuthorityPDA: ", treeAuthorityPDA.toString());
   console.log("canopyDepth: ", canopyDepth);
-
-  // parse the list of proof addresses into a valid AccountMeta[]
+  
   const proof = getAssetProof.data.result.proof
   .slice(0, getAssetProof.data.result.proof.length - (!!canopyDepth ? canopyDepth : 0))
   .map((node) => ({
@@ -178,52 +179,50 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
     isWritable: false,
     isSigner: false,
   }));
-//   console.log("proof: ", proof);
-
+  
   var totalSize = 1 + 32 + 32 + 32 + 32 + 8 + 1;
   console.log("totalSize: ", totalSize);
-
+  
   var uarray = new Uint8Array(totalSize);
   let counter = 0;    
   uarray[counter++] = 0; // 0 = cnft_burner BurnCNFT instruction
-
+  
   let assetIdb58 = bs58.decode(assetId);
   var arr = Array.prototype.slice.call(Buffer.from(assetIdb58), 0);
   for (let i = 0; i < arr.length; i++) {
-      uarray[counter++] = arr[i];
+    uarray[counter++] = arr[i];
   }
 
   let rootb58 = bs58.decode(getAssetProof.data.result.root);
   var arr = Array.prototype.slice.call(Buffer.from(rootb58), 0);
   for (let i = 0; i < arr.length; i++) {
-      uarray[counter++] = arr[i];
+    uarray[counter++] = arr[i];
   }
 
   let datahashb58 = bs58.decode(getAsset.data.result.compression.data_hash);
   var arr = Array.prototype.slice.call(Buffer.from(datahashb58), 0);
   for (let i = 0; i < arr.length; i++) {
-      uarray[counter++] = arr[i];
+    uarray[counter++] = arr[i];
   }
 
   let creatorhashb58 = bs58.decode(getAsset.data.result.compression.creator_hash);
   var arr = Array.prototype.slice.call(Buffer.from(creatorhashb58), 0);
   for (let i = 0; i < arr.length; i++) {
-      uarray[counter++] = arr[i];
+    uarray[counter++] = arr[i];
   }
-
+  
   var byteArray = [0, 0, 0, 0, 0, 0, 0, 0];
   for ( var index = 0; index < byteArray.length; index ++ ) {
-      var byte = getAsset.data.result.compression.leaf_id & 0xff;
-      byteArray [ index ] = byte;
-      getAsset.data.result.compression.leaf_id = (getAsset.data.result.compression.leaf_id - byte) / 256 ;
+    var byte = getAsset.data.result.compression.leaf_id & 0xff;
+    byteArray [ index ] = byte;
+    getAsset.data.result.compression.leaf_id = (getAsset.data.result.compression.leaf_id - byte) / 256 ;
   }
   for (let i = 0; i < byteArray.length; i++) {
-      uarray[counter++] = byteArray[i];
+    uarray[counter++] = byteArray[i];
   }
-
+  
   uarray[counter++] = proof.length;
-//   console.log("Contract Data: ", uarray);
-
+  
   let keys = [
     { pubkey: provider.publicKey, isSigner: true, isWritable: true }, // 0
     { pubkey: leafDelegate, isSigner: false, isWritable: true }, // 1
@@ -235,22 +234,20 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
     { pubkey: new solanaWeb3.PublicKey(BUBBLEGUM), isSigner: false, isWritable: false }, // 7
   ];
   for (let i = 0; i < proof.length; i++) {keys.push(proof[i]);}
-//   console.log("keys ", keys);
-
+  
   const burnCNFTIx = new solanaWeb3.TransactionInstruction({
     programId: cNFTBurnerProgramId,
     data: Buffer.from(uarray),
     keys: keys,
   });
-//   console.log("Burn cNFT Ix: ", burnCNFTIx);
-
+  
   let mainALTAddress = new solanaWeb3.PublicKey(_alt_);  
   const mainALTAccount = await connection
   .getAddressLookupTable(mainALTAddress)
   .then((res) => res.value);
   if (!mainALTAccount) {
-      console.log("Could not fetch ALT!");
-      return;
+    console.log("Could not fetch ALT!");
+    return;
   }  
 
   let messageV0 = null;
@@ -270,7 +267,6 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
     
     console.log("burning... "+assetId);
     await new Promise(_=>setTimeout(_,throttle));
-    
     /// ***
     let computeLimitIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({units:burn_cu,});
     let instructions = [computeLimitIx, burnCNFTIx];
@@ -354,7 +350,6 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
     
     console.log("burning... ", _asset_);
     await new Promise(_=>setTimeout(_,throttle));
-    
     /// ***
     let computeLimitIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({units:burn_cu,});
     let instructions = [computeLimitIx, burnCNFTIx];
@@ -422,9 +417,9 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
     await new Promise(_=>setTimeout(_,throttle));
     const slot = await connection.getSlot();
     const [createALTIx, proofALTAddress] = solanaWeb3.AddressLookupTableProgram.createLookupTable({
-        authority: provider.publicKey,
-        payer: provider.publicKey,
-        recentSlot: slot,
+      authority: provider.publicKey,
+      payer: provider.publicKey,
+      recentSlot: slot,
     });
     console.log("ALT HELPER ADDRESS: ", proofALTAddress.toBase58());
 
@@ -466,7 +461,8 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
       instructions: final_instructions,
     }).compileToV0Message([mainALTAccount]);
     tx = new solanaWeb3.VersionedTransaction(messageV0);      
-    /// ***     
+    /// ***
+    
     try {
 
       let signature = null;
@@ -509,7 +505,6 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
       
       console.log("burning... "+assetId);
       await new Promise(_=>setTimeout(_,throttle));
-      
       /// ***
       let computeLimitIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({units:burn_cu,});
       let instructions = [computeLimitIx, burnCNFTIx];
@@ -590,7 +585,7 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
         error = JSON.parse(error);
         return;
       }
-
+      
     } 
     catch(error) {
         console.log("error: ", error);
@@ -604,6 +599,9 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
   }
   
 }
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
 // deactivate a helper alt
 async function altDeactivate(_priority_,_alt_,_helius_,_close_=false) {
   let messageV0 = null;
@@ -695,6 +693,9 @@ async function altDeactivate(_priority_,_alt_,_helius_,_close_=false) {
     return;
   }
 }
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
 // close a helper alt and recover the rent
 async function altClose(_priority_,_alt_,_helius_) {
   let messageV0 = null;
@@ -776,46 +777,42 @@ async function altClose(_priority_,_alt_,_helius_) {
 ////////////////////////////////////////////////////////////////////////////////
 // routing
 if(provider != null){(async() => {
-    let commands = []; 
-    let skipper = 0;
-    process.argv.forEach(function (val, index, array) {
-      if(skipper > 1){commands.push(val);}
-      skipper++;
-    });
-    if(typeof commands[0]=="undefined" || typeof commands[1]=="undefined"){
-      console.log("method and token id required");
-      return;
+  let commands = []; 
+  let skipper = 0;
+  process.argv.forEach(function (val, index, array) {
+    if(skipper > 1){commands.push(val);}
+    skipper++;
+  });
+  if(typeof commands[0]=="undefined" || typeof commands[1]=="undefined"){
+    console.log("method and token id required");
+    return;
+  }
+  if(commands[0]=="torch"){
+    if(typeof commands[2] != "undefined" && commands[2] == "true"){
+      await mcburn(commands[1],priority,rpc,burner,static_alt,true);
     }
-    if(commands[0]=="torch"){
-      if(typeof commands[2] != "undefined" && commands[2] == "true"){
-        await mcburn(commands[1],priority,rpc,burner,static_alt,true);
-      }
-      else{
-        await mcburn(commands[1],priority,rpc,burner,static_alt);
-      }
+    else{
+      await mcburn(commands[1],priority,rpc,burner,static_alt);
     }
-    else if(commands[0]=="retry"){
-      if(typeof commands[2] != "undefined" && commands[2] == "true"){
-        await mcburn(commands[1],priority,rpc,burner,static_alt,true,commands[3]);
-      }
-      else{
-        await mcburn(commands[1],priority,rpc,burner,static_alt,false,commands[3]);
-      }
+  }
+  else if(commands[0]=="retry"){
+    if(typeof commands[2] != "undefined" && commands[2] == "true"){
+      await mcburn(commands[1],priority,rpc,burner,static_alt,true,commands[3]);
     }
-    else if(commands[0]=="deactivate"){
-      if(typeof commands[2] != "undefined" && commands[2] == "true"){
-        await altDeactivate(priority,commands[1],rpc,true);
-      }
-      else{
-        await altDeactivate(priority,commands[1],rpc);
-      }
+    else{
+      await mcburn(commands[1],priority,rpc,burner,static_alt,false,commands[3]);
     }
-    else if(commands[0]=="close"){
-      await altClose(priority,commands[1],rpc);
+  }
+  else if(commands[0]=="deactivate"){
+    if(typeof commands[2] != "undefined" && commands[2] == "true"){
+      await altDeactivate(priority,commands[1],rpc,true);
     }
-  })();
-////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////
-}
+    else{
+      await altDeactivate(priority,commands[1],rpc);
+    }
+  }
+  else if(commands[0]=="close"){
+    await altClose(priority,commands[1],rpc);
+  }
+})();}
 ////////////////////////////////////////////////////////////////////////////////
