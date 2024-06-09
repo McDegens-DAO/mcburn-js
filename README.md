@@ -69,8 +69,6 @@ const rpc = "https://rpc.helius.xyz/?api-key=xxxxxxxxxx"; // helius
 const priority = "Medium"; // lamports (priority fee)
 const burner = "GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i"; // burner program
 const throttle = 5000; // more seconds if your rpc limits are being stressed
-const burn_cu = 150000; // cu limit for the main burn method
-const other_cu = 100000; // cu limit for deactivating and closing alts
 ```
 
 # Commands
