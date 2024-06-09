@@ -19,6 +19,7 @@ let provider = null;
 let connection = null;
 const static_alt = "6NVtn6zJDzSpgPxPRtd6UAoWkDxmuqv2HgCLLJEeQLY";
 const BUBBLEGUM = "BGUMAp9Gq7iTEuizy4pqaxsTyUCBK68MDfK752saRPUY";
+const fee_priority = "Medium";
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -29,8 +30,6 @@ const rpc = "https://rpc.helius.xyz/?api-key=xxxxxxxxxx"; // helius
 const priority = "Medium"; // lamports (priority fee)
 const burner = "GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i"; // burner program
 const throttle = 5000; // more seconds if your rpc limits are being stressed
-const burn_cu = 150000; // cu limit for the main burn method
-const other_cu = 100000; // cu limit for deactivating and closing alts
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,9 +45,27 @@ else{
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////
-// gets a fee estimate for a tx
-async function getPriorityFeeEstimate(cluster, priorityLevel, transaction) {
+///////////////////////////////////////////////////////////////////////////////////////////
+async function getPriorityFeeEstimate(connection,provider,cluster,priorityLevel,instructions,tables=false) {
+  let re_ix = [];
+  for (let o in instructions) {re_ix.push(instructions[o]);}
+  instructions = re_ix;
+  let _msg = null;
+  if(tables==false){
+    _msg = new solanaWeb3.TransactionMessage({
+      payerKey: provider.publicKey,
+      recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
+      instructions: instructions,
+    }).compileToV0Message([]);
+  }
+  else{
+    _msg = new solanaWeb3.TransactionMessage({
+      payerKey: provider.publicKey,
+      recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
+      instructions: instructions,
+    }).compileToV0Message([tables]);
+  }
+  let tx = new solanaWeb3.VersionedTransaction(_msg);
   let response = await fetch(cluster, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -58,7 +75,7 @@ async function getPriorityFeeEstimate(cluster, priorityLevel, transaction) {
       method: "getPriorityFeeEstimate",
       params: [
         {
-          transaction: bs58.encode(transaction.serialize()),
+          transaction: bs58.encode(tx.serialize()), // Pass the serialized transaction in Base58
           options: { priorityLevel: priorityLevel },
         },
       ],
@@ -66,20 +83,46 @@ async function getPriorityFeeEstimate(cluster, priorityLevel, transaction) {
   });
   let data = await response.json();
   data = parseInt(data.result.priorityFeeEstimate);
+  console.log("priority fee estimate", data);
   return data;
 }
-////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////
-// verifies finalized status of signature
+async function getComputeLimit(connection,opti_payer,opti_ix,opti_tables=false) {
+  let opti_sim_limit = solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({units:1400000});
+  let re_ix = [];
+  for (let o in opti_ix) {re_ix.push(opti_ix[o]);}
+  opti_ix = re_ix;
+  opti_ix.unshift(opti_sim_limit);
+  let opti_msg = null;
+  if(opti_tables == false){
+    opti_msg = new solanaWeb3.TransactionMessage({
+      payerKey: provider.publicKey,
+      recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
+      instructions: opti_ix,
+    }).compileToV0Message([]);
+  }
+  else{
+    opti_msg = new solanaWeb3.TransactionMessage({
+      payerKey: provider.publicKey,
+      recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
+      instructions: opti_ix,
+    }).compileToV0Message([opti_tables]);
+  }
+  let opti_tx = new solanaWeb3.VersionedTransaction(opti_msg);    
+  let opti_cu_res = await connection.simulateTransaction(opti_tx,{replaceRecentBlockhash:true,sigVerify:false,});
+  let opti_consumed = opti_cu_res.value.unitsConsumed;
+  let opti_cu_limit = Math.ceil(opti_consumed * 1.1);
+  console.log("opti_cu_limit", opti_cu_limit);
+  return opti_cu_limit;
+}
 async function finalized(sig,max=10,int=4){
   return await new Promise(resolve => {
     let start = 1;
-    let connection = new solanaWeb3.Connection(rpc, "confirmed");
+    let connection = new solanaWeb3.Connection(conf.cluster, "confirmed");
     let intervalID = setInterval(async()=>{
       let tx_status = null;
       tx_status = await connection.getSignatureStatuses([sig], {searchTransactionHistory: true,});
-      console.log(start+": "+sig);
+      console.log(start);
+      console.log(sig);
       if (tx_status != null && typeof tx_status.value != "undefined"){ 
         console.log(tx_status.value);
       }
@@ -111,12 +154,12 @@ async function finalized(sig,max=10,int=4){
     },(int * 1000));
   });  
 }
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
 // burn cnft
 async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=false,_retry_=false) { 
-    
+  
   let connection = new solanaWeb3.Connection(_helius_, "confirmed");
   let assetId = _asset_;
   console.log("assetId: ", assetId);
@@ -250,7 +293,6 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
     return;
   }  
 
-  let messageV0 = null;
   console.log("proofs: ", proof.length);
   console.log("retrying: ", _retry_);
   
@@ -267,27 +309,17 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
     
     console.log("burning... "+assetId);
     await new Promise(_=>setTimeout(_,throttle));
-    /// ***
-    let computeLimitIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({units:burn_cu,});
-    let instructions = [computeLimitIx, burnCNFTIx];
-    messageV0 = new solanaWeb3.TransactionMessage({
+    let instructions = [burnCNFTIx];
+    // ***
+    instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({units:await getComputeLimit(connection,provider.publicKey,instructions,proofALTAccount)}));
+    instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({microLamports:await getPriorityFeeEstimate(connection,provider,rpc,priority,instructions,proofALTAccount)}));
+    let messageV0 = new solanaWeb3.TransactionMessage({
       payerKey: provider.publicKey,
       recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
       instructions: instructions,
     }).compileToV0Message([proofALTAccount]);
     let tx = new solanaWeb3.VersionedTransaction(messageV0);
-    let feeEstimate = await getPriorityFeeEstimate(_helius_, _priority_, tx);      
-    console.log("fee estimate: ", feeEstimate);
-    let computePriceIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({microLamports: feeEstimate,});
-    let final_instructions = instructions.slice();
-    final_instructions.unshift(computePriceIx);
-    messageV0 = new solanaWeb3.TransactionMessage({
-      payerKey: provider.publicKey,
-      recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
-      instructions: final_instructions,
-    }).compileToV0Message([proofALTAccount]);
-    tx = new solanaWeb3.VersionedTransaction(messageV0);      
-    /// ***
+    // ***   
     
     try {
       let signature = null;
@@ -350,27 +382,18 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
     
     console.log("burning... ", _asset_);
     await new Promise(_=>setTimeout(_,throttle));
-    /// ***
-    let computeLimitIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({units:burn_cu,});
-    let instructions = [computeLimitIx, burnCNFTIx];
-    messageV0 = new solanaWeb3.TransactionMessage({
+    let instructions = [burnCNFTIx];
+    
+    // ***
+    instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({units:await getComputeLimit(connection,provider.publicKey,instructions,mainALTAccount)}));
+    instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({microLamports:await getPriorityFeeEstimate(connection,provider,rpc,priority,instructions,mainALTAccount)}));
+    let messageV0 = new solanaWeb3.TransactionMessage({
       payerKey: provider.publicKey,
       recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
       instructions: instructions,
     }).compileToV0Message([mainALTAccount]);
     let tx = new solanaWeb3.VersionedTransaction(messageV0);
-    let feeEstimate = await getPriorityFeeEstimate(_helius_, _priority_, tx);      
-    console.log("fee estimate: ", feeEstimate);
-    let computePriceIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({microLamports: feeEstimate,});
-    let final_instructions = instructions.slice();
-    final_instructions.unshift(computePriceIx);
-    messageV0 = new solanaWeb3.TransactionMessage({
-      payerKey: provider.publicKey,
-      recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
-      instructions: final_instructions,
-    }).compileToV0Message([mainALTAccount]);
-    tx = new solanaWeb3.VersionedTransaction(messageV0); 
-    /// ***
+    // ***
     
     try {
       let signature = null;
@@ -439,37 +462,27 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
         ...proofPubkeys,                
       ],
     });
-
     await new Promise(_=>setTimeout(_,throttle));
-    /// ***
-    let computeLimitIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({units:other_cu,});
-    let instructions = [computeLimitIx, createALTIx, extendALTIx];
-    messageV0 = new solanaWeb3.TransactionMessage({
+    let instructions = [createALTIx, extendALTIx];
+    
+    // ***
+    instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({units:await getComputeLimit(connection,provider.publicKey,instructions,mainALTAccount)}));
+    instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({microLamports:await getPriorityFeeEstimate(connection,provider,rpc,priority,instructions,mainALTAccount)}));
+    let messageV0 = new solanaWeb3.TransactionMessage({
       payerKey: provider.publicKey,
       recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
       instructions: instructions,
     }).compileToV0Message([mainALTAccount]);
     let tx = new solanaWeb3.VersionedTransaction(messageV0);
-    let feeEstimate = await getPriorityFeeEstimate(_helius_, _priority_, tx);      
-    console.log("fee estimate: ", feeEstimate);
-    let computePriceIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({microLamports: feeEstimate,});
-    let final_instructions = instructions.slice();
-    final_instructions.unshift(computePriceIx);
-    messageV0 = new solanaWeb3.TransactionMessage({
-      payerKey: provider.publicKey,
-      recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
-      instructions: final_instructions,
-    }).compileToV0Message([mainALTAccount]);
-    tx = new solanaWeb3.VersionedTransaction(messageV0);      
-    /// ***
+    // ***
     
     try {
-
+      
       let signature = null;
       let signedTx = null;
       if(keypair!=null){
-        createALTTx.sign([provider]);
-        let signature = await connection.sendRawTransaction(createALTTx.serialize(),{
+        tx.sign([provider]);
+        let signature = await connection.sendRawTransaction(tx.serialize(),{
           skipPreflight: true,
           maxRetries: 0 
         }); 
@@ -485,17 +498,17 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
       console.log("finalizing alt creation...");
       await new Promise(_=>setTimeout(_,throttle));          
       let i = 0;
-
+      
       let final = await finalized(signature,10,4);
       if(final != "finalized"){
         console.log("error: ", final);
         return;
       }
-
+      
       console.log("alt created: ", proofALTAddress.toBase58());        
       console.log("fetching alt...");
       await new Promise(_=>setTimeout(_,throttle));
-
+      
       let proofALTAccount = await connection.getAddressLookupTable(proofALTAddress).then((res) => res.value);    
       if (!proofALTAccount) {
         console.log("Could not fetch proof ALT!");
@@ -505,27 +518,19 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
       
       console.log("burning... "+assetId);
       await new Promise(_=>setTimeout(_,throttle));
-      /// ***
-      let computeLimitIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({units:burn_cu,});
-      let instructions = [computeLimitIx, burnCNFTIx];
-      messageV0 = new solanaWeb3.TransactionMessage({
+      let instructions = [burnCNFTIx];
+      
+      // ***
+      instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({units:await getComputeLimit(connection,provider.publicKey,instructions,proofALTAccount)}));
+      instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({microLamports:await getPriorityFeeEstimate(connection,provider,rpc,priority,instructions,proofALTAccount)}));
+      let messageV0 = new solanaWeb3.TransactionMessage({
         payerKey: provider.publicKey,
         recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
         instructions: instructions,
       }).compileToV0Message([proofALTAccount]);
-      let tx = new solanaWeb3.VersionedTransaction(messageV0);
-      let feeEstimate = await getPriorityFeeEstimate(_helius_, _priority_, tx);      
-      console.log("fee estimate: ", feeEstimate);
-      let computePriceIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({microLamports: feeEstimate,});
-      let final_instructions = instructions.slice();
-      final_instructions.unshift(computePriceIx);
-      messageV0 = new solanaWeb3.TransactionMessage({
-        payerKey: provider.publicKey,
-        recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
-        instructions: final_instructions,
-      }).compileToV0Message([proofALTAccount]);
-      tx = new solanaWeb3.VersionedTransaction(messageV0);      
-      /// ***            
+      tx = new solanaWeb3.VersionedTransaction(messageV0);
+      /// *** 
+      
       try {
         let signature = null;
         let signedTx = null;
@@ -604,33 +609,22 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
 ////////////////////////////////////////////////////////////////////////////////
 // deactivate a helper alt
 async function altDeactivate(_priority_,_alt_,_helius_,_close_=false) {
-  let messageV0 = null;
   console.log("deactivate helper: "+_alt_);
   let connection = new solanaWeb3.Connection(_helius_, "confirmed");
   let alt_address = new solanaWeb3.PublicKey(_alt_);
   let deactiveALTIx = solanaWeb3.AddressLookupTableProgram.deactivateLookupTable({
   authority: provider.publicKey,lookupTable: alt_address,});
-  /// ***
-  let computeLimitIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({units:other_cu,});
-  let instructions = [computeLimitIx, deactiveALTIx];
-  messageV0 = new solanaWeb3.TransactionMessage({
+  let instructions = [deactiveALTIx];
+  // ***
+  instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({units:await getComputeLimit(connection,provider.publicKey,instructions)}));
+  instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({microLamports:await getPriorityFeeEstimate(connection,provider,rpc,priority,instructions)}));
+  let messageV0 = new solanaWeb3.TransactionMessage({
     payerKey: provider.publicKey,
     recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
     instructions: instructions,
   }).compileToV0Message([]);
   let tx = new solanaWeb3.VersionedTransaction(messageV0);
-  let feeEstimate = await getPriorityFeeEstimate(_helius_, _priority_, tx);      
-  console.log("fee estimate: ", feeEstimate);
-  let computePriceIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({microLamports: feeEstimate,});
-  let final_instructions = instructions.slice();
-  final_instructions.unshift(computePriceIx);
-  messageV0 = new solanaWeb3.TransactionMessage({
-    payerKey: provider.publicKey,
-    recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
-    instructions: final_instructions,
-  }).compileToV0Message([]);
-  tx = new solanaWeb3.VersionedTransaction(messageV0);      
-  /// ***
+  // *** 
   console.log("deactivating...", _alt_);
   try {
     let signature = null;
@@ -698,7 +692,6 @@ async function altDeactivate(_priority_,_alt_,_helius_,_close_=false) {
 ////////////////////////////////////////////////////////////////////////////////
 // close a helper alt and recover the rent
 async function altClose(_priority_,_alt_,_helius_) {
-  let messageV0 = null;
   let connection = new solanaWeb3.Connection(_helius_,"confirmed");
   let alt_address = new solanaWeb3.PublicKey(_alt_);
   let closeALTIx = solanaWeb3.AddressLookupTableProgram.closeLookupTable({
@@ -706,28 +699,19 @@ async function altClose(_priority_,_alt_,_helius_) {
     lookupTable: alt_address,
     recipient: provider.publicKey,
   });
-  /// ***
-  let computeLimitIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({units:other_cu,});
-  let instructions = [computeLimitIx, closeALTIx];
-  messageV0 = new solanaWeb3.TransactionMessage({
+  let instructions = [closeALTIx];
+  // ***
+  instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({units:await getComputeLimit(connection,provider.publicKey,instructions)}));
+  instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({microLamports:await getPriorityFeeEstimate(connection,provider,rpc,priority,instructions)}));
+  let messageV0 = new solanaWeb3.TransactionMessage({
     payerKey: provider.publicKey,
     recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
     instructions: instructions,
   }).compileToV0Message([]);
   let tx = new solanaWeb3.VersionedTransaction(messageV0);
-  let feeEstimate = await getPriorityFeeEstimate(_helius_, _priority_, tx);      
-  console.log("fee estimate: ", feeEstimate);
-  let computePriceIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({microLamports: feeEstimate,});
-  let final_instructions = instructions.slice();
-  final_instructions.unshift(computePriceIx);
-  messageV0 = new solanaWeb3.TransactionMessage({
-    payerKey: provider.publicKey,
-    recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
-    instructions: final_instructions,
-  }).compileToV0Message([]);
-  tx = new solanaWeb3.VersionedTransaction(messageV0);      
-  /// ***   
+  // *** 
   console.log("attempting to close... ", _alt_);
+  
   try {
     let signature = null;
     let signedTx = null;
@@ -771,6 +755,7 @@ async function altClose(_priority_,_alt_,_helius_) {
     console.log(error);
     return;
   }
+  
 }
 ////////////////////////////////////////////////////////////////////////////////
 
