@@ -75,7 +75,7 @@ async function getPriorityFeeEstimate(cluster, priorityLevel, transaction) {
 async function finalized(sig,max=10,int=4){
   return await new Promise(resolve => {
     let start = 1;
-    let connection = new solanaWeb3.Connection(conf.cluster, "confirmed");
+    let connection = new solanaWeb3.Connection(rpc, "confirmed");
     let intervalID = setInterval(async()=>{
       let tx_status = null;
       tx_status = await connection.getSignatureStatuses([sig], {searchTransactionHistory: true,});
