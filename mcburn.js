@@ -24,7 +24,7 @@ const BUBBLEGUM = "BGUMAp9Gq7iTEuizy4pqaxsTyUCBK68MDfK752saRPUY";
 ////////////////////////////////////////////////////////////////////////////////
 // settings
 const keypair = [0,0,0,"~"]; // this is your private keypair, be careful
-// let keypair = null; // used for hot wallet connections
+// const keypair = null; // used for hot wallet connections
 const rpc = "https://rpc.helius.xyz/?api-key=xxxxxxxxxx"; // helius
 const priority = "Medium"; // lamports (priority fee)
 const burner = "GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i"; // burner program
