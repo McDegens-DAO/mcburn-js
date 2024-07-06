@@ -70,57 +70,7 @@ to recoup the rent for you.
 
 **example output**
 ```javascript
-npm run mcburn torch 8yriTfMg1BQDyaD7X2mUpeXSTe6W4Q91SwxupHnThWv1
 
-> mcburn@0.0.2 mcburn
-> node mcburn.js torch 8yriTfMg1BQDyaD7X2mUpeXSTe6W4Q91SwxupHnThWv1
-
-private key in use!
-assetId:  8yriTfMg1BQDyaD7X2mUpeXSTe6W4Q91SwxupHnThWv1
-data_hash:  DWqMofJFqehTD2zg3hNfEA58WRYDW7xndJoSXG1ccW2g
-creator_hash:  EKDHSGbrGztomDfuiV4iqiZ6LschDJPsFiXjZ83f92Md
-leaf_id:  3840261
-leafDelegate:  FBQHeifBur7UDEUkBV9v16TAYfhDTnpjbwV8GTdp5jMq
-owner:  7Z3LJB2rxV4LiRBwgwTcufAWxnFTVJpcoCMiCo8Z5Ere
-fetching proof...
-tree_id:  BK1odnvdPePUsARpypamop1ug97d6yS4WTDXSRjNV8hF
-root:  5ME3yJBttQeoCJ9u8LdGxtKrEuQYvg47R3SPAAJBKYet
-fetching tree...
-treeAuthorityPDA:  HZdoqGiwv7iihzDJvAnoYtMg65n3P4VQoD9HjV7m1DT6
-canopyDepth:  0
-totalSize:  138
-proofs:  24
-retrying:  false
-creating alt...
-ALT HELPER ADDRESS:  GxXLjXfreP3WceAue8HzJyaLr8TrDBESWtMCjRrqtopu
-signature:  3K6cwE5kb78kKMa6xxXUJU1dibPGNDBE9iAXn6J5vwGGBW4kHhvQHVJTomFGkBVaRQAR8S3Mq4ZmN331MmHWqw9
-finalizing alt creation...
-alt created:  GxXLjXfreP3WceAue8HzJyaLr8TrDBESWtMCjRrqtopu
-fetching alt...
-alt found:  GxXLjXfreP3WceAue8HzJyaLr8TrDBESWtMCjRrqtopu
-burning... 8yriTfMg1BQDyaD7X2mUpeXSTe6W4Q91SwxupHnThWv1
-signature:  516vnbfRAmWRWDsY6iERS8wBkzcyjFY4MfVPWnhZrchhmEWoCfEpBMD38PPRDuRwmFA9bVyMWWLVLwv3F2Lj3LB3
-finalizing burn...  8yriTfMg1BQDyaD7X2mUpeXSTe6W4Q91SwxupHnThWv1
-asset burned:  8yriTfMg1BQDyaD7X2mUpeXSTe6W4Q91SwxupHnThWv1
-deactivate helper: GxXLjXfreP3WceAue8HzJyaLr8TrDBESWtMCjRrqtopu
-deactivating... GxXLjXfreP3WceAue8HzJyaLr8TrDBESWtMCjRrqtopu
-signature:  dAELj4BeRbzhhpqBoJQrGV8JCqcAjLTzUjN6mPEs9EK2PVdhy5bFLdmWEgetH5NU6NgiHxenL7tnacTTpcX4j69
-finalizing deactivation... GxXLjXfreP3WceAue8HzJyaLr8TrDBESWtMCjRrqtopu
-helper deactivated:  GxXLjXfreP3WceAue8HzJyaLr8TrDBESWtMCjRrqtopu
-waiting to close... GxXLjXfreP3WceAue8HzJyaLr8TrDBESWtMCjRrqtopu
-attempting to close...  GxXLjXfreP3WceAue8HzJyaLr8TrDBESWtMCjRrqtopu
-wait time: 340 blocks...
-attempting to close...  GxXLjXfreP3WceAue8HzJyaLr8TrDBESWtMCjRrqtopu
-wait time: 195 blocks...
-attempting to close...  GxXLjXfreP3WceAue8HzJyaLr8TrDBESWtMCjRrqtopu
-wait time: 57 blocks...
-attempting to close...  GxXLjXfreP3WceAue8HzJyaLr8TrDBESWtMCjRrqtopu
-signature:  39S67GB3jeoBUkpiFiRGYE7mi2Z1wVo1mu7s3k5x5532ubZ9XW2UfrRGNA1ygKVwVDQJuwR3xs8JgW3QU6dkWZTr
-finalizing rent recovery...  GxXLjXfreP3WceAue8HzJyaLr8TrDBESWtMCjRrqtopu
-...
-alt closed:  GxXLjXfreP3WceAue8HzJyaLr8TrDBESWtMCjRrqtopu
-funds recovered:  GxXLjXfreP3WceAue8HzJyaLr8TrDBESWtMCjRrqtopu
-done
 ```
 
 **torch and stop**
