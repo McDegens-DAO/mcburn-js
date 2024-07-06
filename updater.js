@@ -24,7 +24,9 @@ if(err){
                 }
                 else{
                     console.log("updater.js moved to mcburn-js");
-                    console.log("mcburn installed!");
+                    fs.rmSync('mcburn-js', { recursive: true });
+                    console.log("mcburn-js purged");
+                    console.log("mcburn installed successfully!");
                     console.log("open config.js and add your settings");
                 }
             });
@@ -48,7 +50,9 @@ else{
         }
         else{
             console.log("updater.js moved to mcburn-js");
-            console.log("mcburn updated!");
+            fs.rmSync('mcburn-js', { recursive: true });
+            console.log("mcburn-js purged");
+            console.log("mcburn updated successfully!");
         }
     });
 }
