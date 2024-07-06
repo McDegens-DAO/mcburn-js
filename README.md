@@ -145,7 +145,7 @@ Since the ALT requires rent you have to save the *Helper ALT* address so that yo
 
 You can find the open source **mcburn** Rust repo here: [mcburn-rs](https://github.com/honeygrahams2/mcburn-rs)
 
-Our program is deployed on Solana mainnet and all are welcome to use it.
+The mcburn program is deployed on Solana mainnet and all are welcome to use it.
 
 # bulk burning
 
