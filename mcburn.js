@@ -1,7 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // name: mcburn.js
-// version: 2.0 (dev)
-// we will remove the dev tag once the cu/priority fee updates have been tested
+// version: 2.0.0
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -14,34 +13,19 @@ import * as splAccountCompression from "@solana/spl-account-compression";
 import * as bs58_ from "bs58";
 let bs58 = bs58_.default;
 import * as buffer from "buffer";
+import {keypair, rpc, priority, throttle, tolerance, burner} from './config.js';
 let Buffer = buffer.Buffer;
 let provider = null;
 let connection = null;
 const static_alt = "6NVtn6zJDzSpgPxPRtd6UAoWkDxmuqv2HgCLLJEeQLY";
 const BUBBLEGUM = "BGUMAp9Gq7iTEuizy4pqaxsTyUCBK68MDfK752saRPUY";
-const fee_priority = "Medium";
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
-// settings
-const keypair = [0,0,0,"~"]; // this is your private keypair, be careful
-// const keypair = null; // used for hot wallet connections
-const rpc = "https://rpc.helius.xyz/?api-key=xxxxxxxxxx"; // helius
-const priority = "Medium"; // lamports (priority fee)
-const burner = "GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i"; // burner program
-const throttle = 5000; // more seconds if your rpc limits are being stressed
-////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////
-// dev - define wallet provider here
+// define wallet provider here
 if(keypair!=null){
   provider=solanaWeb3.Keypair.fromSecretKey(new Uint8Array(keypair));
   console.log("private key in use!");
-}
-else{
-  // browser wallet connection here
-  console.log("expecting browser wallet!");
-  provider="error!";
 }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -54,14 +38,14 @@ async function getPriorityFeeEstimate(connection,provider,cluster,priorityLevel,
   if(tables==false){
     _msg = new solanaWeb3.TransactionMessage({
       payerKey: provider.publicKey,
-      recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
+      recentBlockhash: (await connection.getLatestBlockhash('confirmed')).blockhash,
       instructions: instructions,
     }).compileToV0Message([]);
   }
   else{
     _msg = new solanaWeb3.TransactionMessage({
       payerKey: provider.publicKey,
-      recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
+      recentBlockhash: (await connection.getLatestBlockhash('confirmed')).blockhash,
       instructions: instructions,
     }).compileToV0Message([tables]);
   }
@@ -83,7 +67,8 @@ async function getPriorityFeeEstimate(connection,provider,cluster,priorityLevel,
   });
   let data = await response.json();
   data = parseInt(data.result.priorityFeeEstimate);
-  console.log("priority fee estimate", data);
+  console.log("fee: ", data);
+  if(data < 10000){data=10000;console.log("adjusted: ", data);}
   return data;
 }
 async function getComputeLimit(connection,opti_payer,opti_ix,opti_tables=false) {
@@ -96,37 +81,42 @@ async function getComputeLimit(connection,opti_payer,opti_ix,opti_tables=false) 
   if(opti_tables == false){
     opti_msg = new solanaWeb3.TransactionMessage({
       payerKey: provider.publicKey,
-      recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
+      recentBlockhash: (await connection.getLatestBlockhash('confirmed')).blockhash,
       instructions: opti_ix,
     }).compileToV0Message([]);
   }
   else{
     opti_msg = new solanaWeb3.TransactionMessage({
       payerKey: provider.publicKey,
-      recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
+      recentBlockhash: (await connection.getLatestBlockhash('confirmed')).blockhash,
       instructions: opti_ix,
     }).compileToV0Message([opti_tables]);
   }
   let opti_tx = new solanaWeb3.VersionedTransaction(opti_msg);    
   let opti_cu_res = await connection.simulateTransaction(opti_tx,{replaceRecentBlockhash:true,sigVerify:false,});
+  // console.log("simulation: ", opti_cu_res.value.logs);
   let opti_consumed = opti_cu_res.value.unitsConsumed;
-  let opti_cu_limit = Math.ceil(opti_consumed * 1.1);
-  console.log("opti_cu_limit", opti_cu_limit);
+  let opti_cu_limit = Math.ceil(opti_consumed * tolerance);
+  console.log("compute: ", opti_cu_limit);
   return opti_cu_limit;
 }
-async function finalized(sig,max=10,int=4){
+async function finalized(sig,max=10,int=4,checkslots=false){
   return await new Promise(resolve => {
     let start = 1;
-    let connection = new solanaWeb3.Connection(conf.cluster, "confirmed");
+    let connection = new solanaWeb3.Connection(rpc, "confirmed");
     let intervalID = setInterval(async()=>{
       let tx_status = null;
       tx_status = await connection.getSignatureStatuses([sig], {searchTransactionHistory: true,});
       console.log(start+": "+sig);
-      if (tx_status != null && typeof tx_status.value != "undefined"){ 
-        console.log(tx_status.value);
+      if (
+        typeof tx_status != "undefined" && 
+        tx_status != null && 
+        typeof tx_status.value != "undefined"
+      ){ 
+        console.log("status: ", tx_status.value);
       }
       else{
-        console.log("failed to get status...");
+        console.log("failed to get status, trying again...");
       }
       if (tx_status == null || 
       typeof tx_status.value == "undefined" || 
@@ -142,7 +132,7 @@ async function finalized(sig,max=10,int=4){
       }
       else if (tx_status.value[0].confirmationStatus == "finalized"){
         if(tx_status.value[0].err != null){
-          resolve('program error!');
+          resolve(tx_status.value[0].err);
           clearInterval(intervalID);
         }
         resolve('finalized');
@@ -164,7 +154,7 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
   
   let connection = new solanaWeb3.Connection(_helius_, "confirmed");
   let assetId = _asset_;
-  console.log("assetId: ", assetId);
+  console.log("asset: ", assetId);
 
   let heliusUrl = _helius_;
   let axiosInstance = axios.create({baseURL: heliusUrl});
@@ -184,14 +174,14 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
   if (getAsset.data.result.ownership.delegated == true) {
     leafDelegate = new solanaWeb3.PublicKey(getAsset.data.result.ownership.delegate);
   }
-  console.log("leafDelegate: ", leafDelegate.toString());  
+  console.log("leaf_delegate: ", leafDelegate.toString());  
   console.log("owner: ", getAsset.data.result.ownership.owner);
   if (getAsset.data.result.ownership.owner != provider.publicKey) {
     console.log("Asset Not Owned by Provider");
     return;
   }
-  if (getAsset.data.result.burnt == true) {
-    console.log("Asset Already Burned");
+  if (getAsset.data.result.burnt === true) {
+    console.log("Asset Already Burned!");
     return;
   }  
 
@@ -214,8 +204,8 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
   connection, new solanaWeb3.PublicKey(getAssetProof.data.result.tree_id),);  
   const treeAuthorityPDA = treeAccount.getAuthority();
   const canopyDepth = treeAccount.getCanopyDepth();
-  console.log("treeAuthorityPDA: ", treeAuthorityPDA.toString());
-  console.log("canopyDepth: ", canopyDepth);
+  console.log("tree_authority: ", treeAuthorityPDA.toString());
+  console.log("canopy_depth: ", canopyDepth);
   
   const proof = getAssetProof.data.result.proof
   .slice(0, getAssetProof.data.result.proof.length - (!!canopyDepth ? canopyDepth : 0))
@@ -226,7 +216,7 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
   }));
   
   var totalSize = 1 + 32 + 32 + 32 + 32 + 8 + 1;
-  console.log("totalSize: ", totalSize);
+  console.log("size: ", totalSize);
   
   var uarray = new Uint8Array(totalSize);
   let counter = 0;    
@@ -280,36 +270,34 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
   ];
   for (let i = 0; i < proof.length; i++) {keys.push(proof[i]);}
   
-  const burnCNFTIx = new solanaWeb3.TransactionInstruction({
+  let burnCNFTIx = new solanaWeb3.TransactionInstruction({
     programId: cNFTBurnerProgramId,
     data: Buffer.from(uarray),
     keys: keys,
   });
   
   let mainALTAddress = new solanaWeb3.PublicKey(_alt_);  
-  const mainALTAccount = await connection
-  .getAddressLookupTable(mainALTAddress)
-  .then((res) => res.value);
+  let mainALTAccount = await connection.getAddressLookupTable(mainALTAddress).then((res) => res.value);
   if (!mainALTAccount) {
     console.log("Could not fetch ALT!");
     return;
   }  
-
+  console.log("static alt: ", _alt_);
   console.log("proofs: ", proof.length);
   console.log("retrying: ", _retry_);
   
   if(_retry_!=false){
 
     let proofALTAddress = new solanaWeb3.PublicKey(_retry_);  
-    const proofALTAccount = await connection.getAddressLookupTable(proofALTAddress).then((res) => res.value);    
+    let proofALTAccount = await connection.getAddressLookupTable(proofALTAddress).then((res) => res.value);    
     if (!proofALTAccount) {
       console.log("Could not fetch proof ALT!");
-      console.log("done");
+      console.log("done!");
       return;
     }
     console.log("alt found");
     
-    console.log("burning... "+assetId);
+    console.log("burning: "+assetId);
     await new Promise(_=>setTimeout(_,throttle));
     let instructions = [burnCNFTIx];
     // ***
@@ -317,7 +305,7 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
     instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({microLamports:await getPriorityFeeEstimate(connection,provider,rpc,priority,instructions,proofALTAccount)}));
     let messageV0 = new solanaWeb3.TransactionMessage({
       payerKey: provider.publicKey,
-      recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
+      recentBlockhash: (await connection.getLatestBlockhash('confirmed')).blockhash,
       instructions: instructions,
     }).compileToV0Message([proofALTAccount]);
     let tx = new solanaWeb3.VersionedTransaction(messageV0);
@@ -327,26 +315,30 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
       let signature = null;
       let signedTx = null;
       if(keypair!=null){
+        console.log("signing with keypair...");
         tx.sign([provider]);
-        let signature = await connection.sendRawTransaction(tx.serialize(),{
+        console.log("sending transaction...");
+        signature = await connection.sendRawTransaction(tx.serialize(),{
           skipPreflight: true,
           maxRetries: 0 
-        });          
+        });
       }
       else{
+        console.log("signing with provider...");
         signedTx = await provider.signTransaction(tx);
-        let signature = await connection.sendRawTransaction(signedTx.serialize(),{
+        signature = await connection.sendRawTransaction(signedTx.serialize(),{
           skipPreflight: true,
           maxRetries: 0 
         });           
       }
       console.log("signature: ", signature);
-      console.log("finalizing burn... ", assetId);
+      console.log("checking status: ", assetId);
       await new Promise(_=>setTimeout(_,throttle));
       let i = 0;
       let final = await finalized(signature,10,4);
       if(final != "finalized"){
         console.log("replay error!");
+        console.log(final);
         console.log("running the following command to try again");
         if(_deactivate_==false){
           console.log("npm run mcburn retry "+assetId+" false "+proofALTAddress.toBase58());
@@ -354,6 +346,7 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
         else{
           console.log("npm run mcburn retry "+assetId+" true "+proofALTAddress.toBase58());
         }
+        console.log("done!");
         return;
       }
       console.log("asset burned: ",assetId);
@@ -377,10 +370,12 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
       }
       error = JSON.stringify(error);
       error = JSON.parse(error);
+      console.log(error);
+      console.log("done! (z)");
     }    
 
   }
-  else if (proof.length <= 22) {
+  else if (proof.length <= 20) {
     
     console.log("burning... ", _asset_);
     await new Promise(_=>setTimeout(_,throttle));
@@ -391,7 +386,7 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
     instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({microLamports:await getPriorityFeeEstimate(connection,provider,rpc,priority,instructions,mainALTAccount)}));
     let messageV0 = new solanaWeb3.TransactionMessage({
       payerKey: provider.publicKey,
-      recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
+      recentBlockhash: (await connection.getLatestBlockhash('confirmed')).blockhash,
       instructions: instructions,
     }).compileToV0Message([mainALTAccount]);
     let tx = new solanaWeb3.VersionedTransaction(messageV0);
@@ -401,15 +396,17 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
       let signature = null;
       let signedTx = null;
       if(keypair!=null){
+        console.log("DEBUG 1");
         tx.sign([provider]);
-        let signature = await connection.sendRawTransaction(tx.serialize(),{
+        signature = await connection.sendRawTransaction(tx.serialize(),{
           skipPreflight: true,
           maxRetries: 0 
-        });  
+        });
       }
       else{
+        console.log("DEBUG 2");
         signedTx = await provider.signTransaction(tx);
-        let signature = await connection.sendRawTransaction(signedTx.serialize(),{
+        signature = await connection.sendRawTransaction(signedTx.serialize(),{
           skipPreflight: true,
           maxRetries: 0 
         }); 
@@ -421,17 +418,17 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
       let final = await finalized(signature,10,4);
       if(final != "finalized"){
         console.log("error: ", final);
-        console.log("done:");
+        console.log("done!");
         return;
       }
       console.log("asset burned: ", _asset_);
       console.log("signature:", signature);
-      console.log("done:");
+      console.log("done!");
       return "ok";
     }
     catch(error) {
       console.log("error: ", error);
-      console.log("done:");
+      console.log("done!");
       return;
     }
 
@@ -447,10 +444,21 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
       recentSlot: slot,
     });
     console.log("ALT HELPER ADDRESS: ", proofALTAddress.toBase58());
-
+    console.log("proof.length: ", proof.length);
     let proofPubkeys = [];
-    for (let i = 0; i < proof.length - 22; i++) {proofPubkeys.push(proof[i].pubkey);}
+    for (let i = 0; i < (proof.length-20); i++) {
+      proofPubkeys.push(proof[i].pubkey);
+    }
+    console.log("proofPubkeys: ", proofPubkeys);
 
+    // let helperALTpub = new solanaWeb3.PublicKey(proofALTAddress.toBase58());  
+    // let helperALTaccount = await connection.getAddressLookupTable(helperALTpub).then((res) => res.value);
+    // if (!helperALTaccount) {
+    //   console.log("Could not fetch helper ALT!");
+    //   console.log("done!");
+    //   return;
+    // }
+    
     let extendALTIx = solanaWeb3.AddressLookupTableProgram.extendLookupTable({
       payer: provider.publicKey,
       authority: provider.publicKey,
@@ -464,15 +472,16 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
         ...proofPubkeys,                
       ],
     });
-    await new Promise(_=>setTimeout(_,throttle));
     let instructions = [createALTIx, extendALTIx];
+
+    await new Promise(_=>setTimeout(_,throttle));
     
     // ***
     instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({units:await getComputeLimit(connection,provider.publicKey,instructions,mainALTAccount)}));
     instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({microLamports:await getPriorityFeeEstimate(connection,provider,rpc,priority,instructions,mainALTAccount)}));
     let messageV0 = new solanaWeb3.TransactionMessage({
       payerKey: provider.publicKey,
-      recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
+      recentBlockhash: (await connection.getLatestBlockhash('confirmed')).blockhash,
       instructions: instructions,
     }).compileToV0Message([mainALTAccount]);
     let tx = new solanaWeb3.VersionedTransaction(messageV0);
@@ -484,14 +493,14 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
       let signedTx = null;
       if(keypair!=null){
         tx.sign([provider]);
-        let signature = await connection.sendRawTransaction(tx.serialize(),{
+        signature = await connection.sendRawTransaction(tx.serialize(),{
           skipPreflight: true,
           maxRetries: 0 
         }); 
       }
       else{
         signedTx = await provider.signTransaction(createALTTx);
-        let signature = await connection.sendRawTransaction(signedTx.serialize(),{
+        signature = await connection.sendRawTransaction(signedTx.serialize(),{
           skipPreflight: true,
           maxRetries: 0 
         });
@@ -527,7 +536,7 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
       instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({microLamports:await getPriorityFeeEstimate(connection,provider,rpc,priority,instructions,proofALTAccount)}));
       let messageV0 = new solanaWeb3.TransactionMessage({
         payerKey: provider.publicKey,
-        recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
+        recentBlockhash: (await connection.getLatestBlockhash('confirmed')).blockhash,
         instructions: instructions,
       }).compileToV0Message([proofALTAccount]);
       tx = new solanaWeb3.VersionedTransaction(messageV0);
@@ -538,14 +547,14 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
         let signedTx = null;
         if(keypair!=null){
           tx.sign([provider]);
-          let signature = await connection.sendRawTransaction(tx.serialize(),{
+          signature = await connection.sendRawTransaction(tx.serialize(),{
             skipPreflight: true,
             maxRetries: 0 
           }); 
         }
         else{
           signedTx = await provider.signTransaction(tx);
-          let signature = await connection.sendRawTransaction(signedTx.serialize(),{
+          signature = await connection.sendRawTransaction(signedTx.serialize(),{
             skipPreflight: true,
             maxRetries: 0 
           }); 
@@ -556,8 +565,8 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
         let i = 0;
         let final = await finalized(signature,10,4);
         if(final != "finalized"){
-          console.log("error: ", final);
           console.log("replay error!");
+          console.log(final);
           console.log("run the following command to try again");
           if(_deactivate_==false){
             console.log("npm run mcburn retry "+assetId+" false "+proofALTAddress.toBase58());
@@ -565,7 +574,7 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
           else{
             console.log("npm run mcburn retry "+assetId+" true "+proofALTAddress.toBase58());
           }              
-          console.log("done");
+          console.log("done!");
           return;
         }
         console.log("asset burned: ",assetId);
@@ -586,10 +595,11 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
         }
         else{
           console.log("npm run mcburn retry "+assetId+" true "+proofALTAddress.toBase58());
-        }              
-        console.log("done");
+        }             
         error = JSON.stringify(error);
-        error = JSON.parse(error);
+        error = JSON.parse(error); 
+        console.log(error);
+        console.log("done!");
         return;
       }
       
@@ -599,7 +609,7 @@ async function mcburn(_asset_,_priority_,_helius_,_program_,_alt_,_deactivate_=f
         error = JSON.stringify(error);
         error = JSON.parse(error);
         console.log("error logs: ", error);
-        console.log("done");
+        console.log("done!");
         return;
     }
     
@@ -622,7 +632,7 @@ async function altDeactivate(_priority_,_alt_,_helius_,_close_=false) {
   instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({microLamports:await getPriorityFeeEstimate(connection,provider,rpc,priority,instructions)}));
   let messageV0 = new solanaWeb3.TransactionMessage({
     payerKey: provider.publicKey,
-    recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
+    recentBlockhash: (await connection.getLatestBlockhash('confirmed')).blockhash,
     instructions: instructions,
   }).compileToV0Message([]);
   let tx = new solanaWeb3.VersionedTransaction(messageV0);
@@ -633,21 +643,20 @@ async function altDeactivate(_priority_,_alt_,_helius_,_close_=false) {
     let signedTx = null;
     if(keypair!=null){
       tx.sign([provider]);
-      let signature = await connection.sendRawTransaction(tx.serialize(),{
+      signature = await connection.sendRawTransaction(tx.serialize(),{
         skipPreflight: true,
         maxRetries: 0 
       });
     }
     else{
       signedTx = await provider.signTransaction(tx);
-      let signature = await connection.sendRawTransaction(signedTx.serialize(),{
+      signature = await connection.sendRawTransaction(signedTx.serialize(),{
         skipPreflight: true,
         maxRetries: 0 
       });
     }
     console.log("signature: ", signature);
     console.log("finalizing deactivation...", _alt_);
-    let i = 0;
     let final = await finalized(signature,10,4);
     if(final != "finalized"){
       console.log("error : ", final);
@@ -659,25 +668,27 @@ async function altDeactivate(_priority_,_alt_,_helius_,_close_=false) {
     if(_close_==false){
       console.log("waiting to close...", _alt_);
       const check_slots = setInterval(async function() {
-      let closing = await altClose(_priority_,_alt_,_helius_);
+      let closing = await altClose(_priority_,_alt_,_helius_,true);
       if(closing=="ok"){
         clearInterval(check_slots);
-        console.log("done");
+        await altClose(_priority_,_alt_,_helius_,false);
       }
       else if(Number.isInteger(closing)){
         console.log("wait time: "+closing+" blocks...");
       }
       else{
         clearInterval(check_slots);
+        console.log("simulation error");
+        console.log(closing);
         console.log("...");
+        cs++;
       }
-      cs++;
-      if(cs==10){
+      if(cs==6){
         clearInterval(check_slots);
         console.log("exceeded retry limit! ", _alt_);
-        console.log("done");
+        console.log("done!");
       }
-    },60000);
+    },20000);
     }
   } 
   catch(error) {
@@ -693,7 +704,7 @@ async function altDeactivate(_priority_,_alt_,_helius_,_close_=false) {
 
 ////////////////////////////////////////////////////////////////////////////////
 // close a helper alt and recover the rent
-async function altClose(_priority_,_alt_,_helius_) {
+async function altClose(_priority_,_alt_,_helius_,_simulate_=false) {
   let connection = new solanaWeb3.Connection(_helius_,"confirmed");
   let alt_address = new solanaWeb3.PublicKey(_alt_);
   let closeALTIx = solanaWeb3.AddressLookupTableProgram.closeLookupTable({
@@ -702,60 +713,86 @@ async function altClose(_priority_,_alt_,_helius_) {
     recipient: provider.publicKey,
   });
   let instructions = [closeALTIx];
-  // ***
-  instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({units:await getComputeLimit(connection,provider.publicKey,instructions)}));
-  instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({microLamports:await getPriorityFeeEstimate(connection,provider,rpc,priority,instructions)}));
-  let messageV0 = new solanaWeb3.TransactionMessage({
-    payerKey: provider.publicKey,
-    recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
-    instructions: instructions,
-  }).compileToV0Message([]);
-  let tx = new solanaWeb3.VersionedTransaction(messageV0);
-  // *** 
-  console.log("attempting to close... ", _alt_);
-  
-  try {
-    let signature = null;
-    let signedTx = null;
-    if(keypair!=null){
-      tx.sign([provider]);
-      let signature = await connection.sendRawTransaction(tx.serialize(),{
-        skipPreflight: true,
-        maxRetries: 0 
-      });
-    }
-    else{
-      signedTx = await provider.signTransaction(tx);
-      let signature = await connection.sendRawTransaction(signedTx.serialize(),{
-        skipPreflight: true,
-        maxRetries: 0 
-      });
-    }
-    console.log("signature: ", signature);
-    console.log("finalizing rent recovery... ", _alt_);
-    let i = 0;
-    let final = await finalized(signature,10,4);
-    if(final != "finalized"){
-      console.log("error: ", final);
-      return;
-    }
-    console.log("alt closed: ", _alt_);
-    console.log("funds recovered: ", _alt_);
-    console.log("done");
-    return "ok";
-  }
-  catch(error) {
-    for (let i = 0; i < error.logs.length; i++) {
-      if(error.logs[i].includes("Table cannot be closed")){
-        let str = error.logs[i];
-        str = str.replace(/[^\d.]/g,'');
+
+  if(_simulate_!=false){
+
+    instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({units:1400000}));
+    let messageV0 = new solanaWeb3.TransactionMessage({
+      payerKey: provider.publicKey,
+      recentBlockhash: (await connection.getLatestBlockhash('confirmed')).blockhash,
+      instructions: instructions,
+    }).compileToV0Message([]);
+    let tx = new solanaWeb3.VersionedTransaction(messageV0);
+
+    console.log("checking blocks...");
+    
+    let _test_ = await connection.simulateTransaction(tx,{replaceRecentBlockhash:true,sigVerify:false,});
+    for (let i = 0; i < _test_.value.logs.length; i++) {
+      let line = _test_.value.logs[i];
+      if(line.includes("Table cannot be closed")){
+        let str = line.replace(/[^\d.]/g,'');
         str = parseInt(str);
         return str;
       }
+      else if(line.includes("Program AddressLookupTab1e1111111111111111111111111 success")){
+        return "ok";
+      }
     }
-    console.log("error!");
-    console.log(error);
-    return;
+    return _test_.value;
+  }
+  else{
+
+    instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({units:await getComputeLimit(connection,provider.publicKey,instructions)}));
+    instructions.unshift(solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({microLamports:await getPriorityFeeEstimate(connection,provider,rpc,priority,instructions)}));
+    let messageV0 = new solanaWeb3.TransactionMessage({
+      payerKey: provider.publicKey,
+      recentBlockhash: (await connection.getLatestBlockhash('confirmed')).blockhash,
+      instructions: instructions,
+    }).compileToV0Message([]);
+    let tx = new solanaWeb3.VersionedTransaction(messageV0);
+
+    console.log("attempting to close... ", _alt_);
+    try {
+
+      let signature = null;
+      let signedTx = null;
+      if(keypair!=null){
+        tx.sign([provider]);
+        signature = await connection.sendRawTransaction(tx.serialize(),{
+          skipPreflight: true,
+          maxRetries: 0 
+        });
+      }
+      else{
+        signedTx = await provider.signTransaction(tx);
+        signature = await connection.sendRawTransaction(signedTx.serialize(),{
+          skipPreflight: true,
+          maxRetries: 0 
+        });
+      }
+
+      console.log("signature: ", signature);
+      console.log("recovering rent... ", _alt_);
+      let final = await finalized(signature,10,4);
+      if(final != "finalized"){
+        console.log("error: ", final);
+        console.log("retry closing the alt with: ");
+        console.log("npm run mcburn close "+_alt_);
+        console.log("done!");
+        return;
+      }
+      console.log("alt closed: ", _alt_);
+      console.log("funds recovered: ", _alt_);
+      console.log("done!");
+      return;
+    }
+    catch(error) {
+      console.log("error!");
+      console.log("retry closing the alt with: ");
+      console.log("npm run mcburn close "+_alt_);
+      console.log("done!");
+      return;
+    }
   }
   
 }
