@@ -39,36 +39,18 @@ npm run mcburn close <altAddress>
 
 For bulk burning we recommend the [Sol Incinerator](https://sol-incinerator.com/) application.
 
-# Installing mcburn-js
+# Install/Update mcburn-js
 
-1. Start a new Node.js project.
-
-2. Navigate to your new project folder and run this command in your terminal to install or update
+1. Navigate to your mcburn project folder and run this command in your terminal to install or update
 
 ```javascript
 git clone https://github.com/McDegens-DAO/mcburn-js.git && mv mcburn-js/* . && npm install && npm run updater
 ```
-3. Move the downloaded files to your project root.
-
-4. Run this command in your terminal to install required modules:
-
-```javascript
-npm install
-```
-5. Open **mcburn.js** in your editor.
+2. Open **config.js** in your editor.
 ```javascript
 • add your private keypair 
 • add your helius endpoint
-• save mcburn.js and close
-```
-```javascript
-// settings
-// const keypair = null; // used for hot wallet connections
-const keypair = [0,0,0,"~"]; // this is your private keypair, be careful
-const rpc = "https://rpc.helius.xyz/?api-key=xxxxxxxxxx"; // helius
-const priority = "Medium"; // lamports (priority fee)
-const burner = "GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i"; // burner program
-const throttle = 5000; // more seconds if your rpc limits are being stressed
+• save config.js and close
 ```
 
 # Commands
