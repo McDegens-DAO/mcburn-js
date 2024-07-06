@@ -8,6 +8,21 @@ This CLI serves as a personal wallet hygiene tool for forcefully burning a cNFT.
 
 It is especically helpful when a cNFT appears to be "unburnable" by other means.
 
+# install/update mcburn-js
+
+1. Navigate to your mcburn project folder and run this command in your terminal to install or update
+
+```javascript
+git clone https://github.com/McDegens-DAO/mcburn-js.git && mv mcburn-js/* . && npm install && npm run updater
+```
+2. If it's a new install, open **config.js** in your editor to add your settings.
+```javascript
+• add your private keypair 
+• add your helius endpoint
+• save config.js and close
+```
+# using mcburn
+
 **burn a cnft**
 ```javascript
 npm run mcburn torch <tokenId>
@@ -37,23 +52,7 @@ npm run mcburn deactivate <altAddress> true
 npm run mcburn close <altAddress>
 ```
 
-For bulk burning we recommend the [Sol Incinerator](https://sol-incinerator.com/) application.
-
-# Install/Update mcburn-js
-
-1. Navigate to your mcburn project folder and run this command in your terminal to install or update
-
-```javascript
-git clone https://github.com/McDegens-DAO/mcburn-js.git && mv mcburn-js/* . && npm install && npm run updater
-```
-2. Open **config.js** in your editor.
-```javascript
-• add your private keypair 
-• add your helius endpoint
-• save config.js and close
-```
-
-# Commands
+# details
 
 **mcburn torch**
 
@@ -68,11 +67,6 @@ to recoup the rent for you.
   npm run mcburn torch <tokenId>
 ```
 
-**example output**
-```javascript
-
-```
-
 **torch and stop**
 
 Passing an additional "true" argument after the token id will stop the script after the burn. 
@@ -80,8 +74,6 @@ If the burn required an ALT, the ALT would then be orphaned. You would then have
 ```javascript
   npm run mcburn torch <tokenId> true
 ```
-
-
 
 **mcburn retry**
 
@@ -100,35 +92,6 @@ If you have an orphaned ALT that you need to deactivate you can do it directly w
   npm run mcburn deactivate <altAddress>
 ```
 
-**example output**
-```javascript
-npm run mcburn deactivate ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
-
-> mcburn@0.0.2 mcburn
-> node mcburn.js deactivate ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
-
-private key in use!
-deactivate helper: ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
-deactivating... ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
-signature:  4fgEqarJ8ZiuTTQYrwvsQMAQfoW6hFwK2SHyZtP6EFxbf7AgqcRAyT19hn15kZifVvWaceyccR2zeLvbdoC1yiKP
-finalizing deactivation... ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
-helper deactivated:  ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
-waiting to close... ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
-attempting to close...  ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
-wait time: 341 blocks...
-attempting to close...  ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
-wait time: 200 blocks...
-attempting to close...  ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
-wait time: 67 blocks...
-attempting to close...  ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
-signature:  44tCvruBeGz128pPvXL4ayHmyT1SPac64QZvwtX5ZK4JwPocheZ5zCv68iCMEd6StEbqosxiEvpvHufSfruEzEe
-finalizing rent recovery...  ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
-...
-alt closed:  ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
-funds recovered:  ALDWF8Bouqjx6DhfUVt42kPiTQaoKmwCzoX8oZw6HCAS
-done
-```
-
 **deactivate and stop**
 
 Passing **true** as an additional argument will attempt to deactivate the ALT without trying to close if afterwards.
@@ -145,25 +108,7 @@ in "blocks" in your terminal and retry once per min until it's permitted to be c
   npm run mcburn close <altAddress>
 ```
 
-**example output**
-```javascript
-npm run mcburn close B43LkievT1y9V51a8NENVVURA7NJ2EoF6EHZqgJqyAWa
-
-> mcburn@0.0.2 mcburn
-> node mcburn.js close B43LkievT1y9V51a8NENVVURA7NJ2EoF6EHZqgJqyAWa
-
-private key in use!
-attempting to close...  B43LkievT1y9V51a8NENVVURA7NJ2EoF6EHZqgJqyAWa
-signature:  51473hGK8gR98NK4Xf5KY7C24qKLmekDrLE1fsNz6YraNEHwtFbX2hJXjeK3h14j7rgyxeBfGrbcp8JGEpSFWtRi
-finalizing rent recovery...  B43LkievT1y9V51a8NENVVURA7NJ2EoF6EHZqgJqyAWa
-alt closed:  B43LkievT1y9V51a8NENVVURA7NJ2EoF6EHZqgJqyAWa
-funds recovered:  B43LkievT1y9V51a8NENVVURA7NJ2EoF6EHZqgJqyAWa
-done
-```
-
-
-
-# Notes
+# notes
 
 **Static ALT**
 
@@ -194,10 +139,14 @@ If > 20 proofs are passed in the ix, there will first be a tx to create a *Helpe
 
 Since the ALT requires rent you have to save the *Helper ALT* address so that you can deactivate it and close it to recover funds. Please note that only the ALT creator can perform these actions and reclaim funds.
 
-# Solana Program
+# solana program
 
 **Program Id:** GwR3T5wAAWRCCNyjCs2g9aUM7qAtwNBsn2Z515oGTi7i
 
 You can find the open source **mcburn** Rust repo here: [mcburn-rs](https://github.com/honeygrahams2/mcburn-rs)
 
 Our program is deployed on Solana mainnet and all are welcome to use it.
+
+# bulk burning
+
+For bulk burning through an application we recommend [Sol Incinerator](https://sol-incinerator.com/)
