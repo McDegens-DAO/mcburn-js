@@ -43,10 +43,10 @@ For bulk burning we recommend the [Sol Incinerator](https://sol-incinerator.com/
 
 1. Start a new Node.js project.
 
-2. Navigate to your project root and run this command in your terminal to clone the repo:
+2. Navigate to your new project folder and run this command in your terminal to install or update
 
 ```javascript
-git clone https://github.com/McDegens-DAO/mcburn-js.git
+git clone https://github.com/McDegens-DAO/mcburn-js.git && mv mcburn-js/* . && npm install && npm run updater
 ```
 3. Move the downloaded files to your project root.
 
