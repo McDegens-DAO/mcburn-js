@@ -1,4 +1,4 @@
-# mcburn-js 2.0.0
+# mcburn-js
 
 A Node.js based CLI for interacting with the **mcburn** cNFT burner program for Solana.
 
