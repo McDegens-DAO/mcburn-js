@@ -2,24 +2,26 @@
   "name": "mcburn",
   "version": "0.0.2",
   "type": "module",
-  "description": "Burn a stubborn cNFT",
+  "description": "private cnft burner",
   "main": "mcburn.js",
   "keywords": [
     "cnft",
     "burner",
     "solana"
   ],
-  "author": "@soldapper",
+  "author": "@SolDapper",
   "license": "MIT",
   "scripts": {
-    "mcburn": "node mcburn.js"
+    "mcburn": "node mcburn.js",
+    "updater": "node updater.js"
   },
   "dependencies": {
+    "@solana/spl-account-compression": "^0.2.0",
+    "@solana/web3.js": "^1.89.1",
     "axios": "^1.6.7",
     "bn.js": "^5.2.1",
-    "@solana/web3.js": "^1.89.1",
-    "@solana/spl-account-compression": "^0.2.0",
     "bs58": "^5.0.0",
-    "buffer": "^6.0.3"
+    "buffer": "^6.0.3",
+    "fs": "^0.0.1-security"
   }
 }
