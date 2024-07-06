@@ -52,7 +52,7 @@ npm run mcburn deactivate <altAddress> true
 npm run mcburn close <altAddress>
 ```
 
-# details
+# more details
 
 **mcburn torch**
 
