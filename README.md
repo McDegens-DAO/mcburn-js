@@ -58,7 +58,7 @@ git clone https://github.com/McDegens-DAO/mcburn-js.git && mv mcburn-js/* . && n
 **mcburn torch**
 
 The torch command will run a complete burn. Please be advised that if there are more than 
-22 proofs being passed for the cNFT, the creation of an ALT (lookup table) 
+20 proofs being passed for the cNFT, the creation of an ALT (lookup table) 
 is necessary prior to burning which requires rent, that you will reclaim.
 The **torch** command will attempt to create the ALT automatically when necessary 
 and continue the burning process. In these cases it can take some time for the burn 
@@ -238,7 +238,7 @@ In some cases multiple transactions are required to burn a stubborn cNFT.
 
 **Example**
 
-If > 22 proofs are passed in the ix, there will first be a tx to create a *Helper ALT* prior to the burn transaction. The *Helper ALT* is used in this case to store the extra proofs that would blow the tx size limit.
+If > 20 proofs are passed in the ix, there will first be a tx to create a *Helper ALT* prior to the burn transaction. The *Helper ALT* is used in this case to store the extra proofs that would blow the tx size limit.
 
 **ALT Rent**
 
