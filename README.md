@@ -11,6 +11,9 @@ It is especically helpful when a cNFT appears to be "unburnable" by other means.
 # install/update mcburn-js
 
 1. Create a new mcburn project folder and navigate to it in your terminal.
+```javascript
+mkdir my-mcburner
+```
 2. Run this command in your terminal to install or update mcburn-js.
 ```javascript
 git clone https://github.com/McDegens-DAO/mcburn-js.git && mv mcburn-js/* . && npm install && npm run updater
